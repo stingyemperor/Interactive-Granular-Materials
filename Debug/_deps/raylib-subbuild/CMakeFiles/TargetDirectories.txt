@@ -1,0 +1,3 @@
+/home/empurrer/Documents/raylib-cpp-cmake-template/Debug/_deps/raylib-subbuild/CMakeFiles/raylib-populate.dir
+/home/empurrer/Documents/raylib-cpp-cmake-template/Debug/_deps/raylib-subbuild/CMakeFiles/edit_cache.dir
+/home/empurrer/Documents/raylib-cpp-cmake-template/Debug/_deps/raylib-subbuild/CMakeFiles/rebuild_cache.dir
