@@ -12,7 +12,11 @@
 
 
 void Simulation::resetNeighbor(CompactNSearch::NeighborhoodSearch &nsearch){
-  nsearch.find_neighbors(); 
+  nsearch.find_neighbors();
+}
+
+void Simulation::setPointSetTest(CompactNSearch::NeighborhoodSearch &nsearch, std::vector<std::array<float,3>> &pos){
+  point_id = nsearch.add_point_set(pos.front().data(), pos.size());
 }
 
 void Simulation::setPointSet(CompactNSearch::NeighborhoodSearch &nsearch, std::array<glm::vec3, max_count> &positions){
@@ -25,8 +29,8 @@ void Simulation::setPointSet(CompactNSearch::NeighborhoodSearch &nsearch, std::a
 void Simulation::getNeighbors(CompactNSearch::NeighborhoodSearch &nsearch,std::array<std::vector<unsigned int>,max_count> &neighbors){
   resetNeighbor(nsearch);
   CompactNSearch::PointSet const& ps_1 = nsearch.point_set(point_id);
-  
-  for(unsigned int i = 0; i < max_count; ++i){
+
+  for(unsigned int i = 0; i < ps_1.n_points(); ++i){
     for(unsigned int j = 0; j < ps_1.n_neighbors(point_id, i); ++j){
       neighbors[i].push_back(ps_1.neighbor(point_id, i, j));
     }
@@ -44,23 +48,37 @@ void Simulation::printVector(glm::vec3 &pos){
 
 void Simulation::simulate(ParticleData *p, float dt, CompactNSearch::NeighborhoodSearch &nsearch, Plane &plane){
 
+  float radius = p->radius;
   // The maxmimum number of particles
   unsigned int num_particles = max_count;
   // gravity force
   glm::vec3 force_ext(0.0f,-5.0f,0.0f);
   // Number of solver iterations
   // TODO make this a member of the class
-  unsigned int solver_i = 2;
+  unsigned int solver_i = 5;
 
+  std::vector<std::array<float , 3>> pl;
   // initial velocity update and position estimates
   for(unsigned int i = 0; i < num_particles; ++i){
     p->velocity[i] += force_ext * dt;
     pos_estimate[i] = p->position[i] + p->velocity[i] * dt;
+    test_pos.push_back(std::array<float, 3>{pos_estimate[i].x,pos_estimate[i].y,pos_estimate[i].z});
     // since we do not have constraint groups, we can initalize the delta_x in this loop
   }
+  
+  // generate neighbors
+  if(makePointSet){
+    // setPointSetTest(nsearch,test_pos);
+  setPointSet(nsearch, pos_estimate);
+    makePointSet = false;
+  }
+  // setPointSet(nsearch, pos_estimate);
+  getNeighbors(nsearch,neighbors);
 
   // check for collision with box
   boxConstraint.checkCollision(pos_estimate, plane);
+  //check inter particle collisions
+  // contactConstraint.generateContacts(neighbors, pos_estimate, radius);
 
   // solve constraints
   for(unsigned int i = 0; i < solver_i; ++i){
@@ -68,24 +86,26 @@ void Simulation::simulate(ParticleData *p, float dt, CompactNSearch::Neighborhoo
     for(unsigned int i = 0; i < num_particles; ++i){
       delta_x[i] = glm::vec3(0.0f);
     }
-    // Solve constraints 
+    // Solve constraints
     boxConstraint.solve(pos_estimate,delta_x, plane);
-  
+    // contactConstraint.solve(pos_estimate,delta_x,radius);
+
     // add delta_x to position estimates
     for(unsigned int i = 0; i < num_particles; ++i){
       pos_estimate[i] += delta_x[i];
-    } 
+    }
   }
-  
+
   //
 
   // // // update veocity and position
-   for(unsigned int i =  0; i < num_particles; ++i){ 
+   for(unsigned int i =  0; i < num_particles; ++i){
     float fps= 1/dt;
     p->velocity[i] = (pos_estimate[i] - p->position[i])*fps;
     p->position[i] = pos_estimate[i];
 
     //TODO clean up the neighbors array
+    neighbors[i].clear();
    }
 
   // printVector(pos_estimate[0]);

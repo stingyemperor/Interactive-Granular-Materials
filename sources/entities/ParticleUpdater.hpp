@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BoxConstraint.hpp"
+#include "ContactConstraint.hpp"
 #include "ParticleData.hpp"
 #include "utils/CompactNSearch.h"
 #include <array>
@@ -13,11 +14,16 @@ struct Simulation{
   std::array<glm::vec3, max_count> pos_estimate;
   std::array<glm::vec3, max_count> delta_x;
   BoxConstraint boxConstraint;
-  std::array<std::vector<unsigned int>, max_count> neighbors; 
+  ContactConstraint contactConstraint;
+  std::array<std::vector<unsigned int>, max_count> neighbors;
+  bool makePointSet{true};
+
+  std::vector<std::array<float,3>> test_pos;
 
 
   void resetNeighbor(CompactNSearch::NeighborhoodSearch &nsearch);
   void setPointSet(CompactNSearch::NeighborhoodSearch &nsearch, std::array<glm::vec3, max_count> &positions);
+  void setPointSetTest(CompactNSearch::NeighborhoodSearch &nsearch, std::vector<std::array<float,3>> &pos);
   void getNeighbors(CompactNSearch::NeighborhoodSearch &nsearch,std::array<std::vector<unsigned int>,max_count> &neighbors);
   void simulate(ParticleData *p, float dt, CompactNSearch::NeighborhoodSearch &nsearch, Plane &plane);
   void printVector(glm::vec3 &pos);

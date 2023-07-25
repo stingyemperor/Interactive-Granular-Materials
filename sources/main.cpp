@@ -48,6 +48,17 @@ int main(void)
   Plane plane;
 
 
+  // std::vector<std::array<float , 3>> pl;
+  // for (int i = 0; i < 100; ++i){
+  //   pl.push_back(std::array<float, 3>{0.0f,0.0f,0.0f});
+  // }
+
+  // int pointID = nsearch.add_point_set(pl.front().data(), pl.size());
+  // nsearch.find_neighbors();
+
+  
+
+
   // ParticleSystem particleSystem(1000);
   //   ParticleEmitter particleEmitter;
   // EulerUpdater eulerUpdater;
