@@ -55,30 +55,36 @@ void Simulation::simulate(ParticleData *p, float dt, CompactNSearch::Neighborhoo
   glm::vec3 force_ext(0.0f,-5.0f,0.0f);
   // Number of solver iterations
   // TODO make this a member of the class
-  unsigned int solver_i = 5;
+  unsigned int solver_i = 3;
 
   std::vector<std::array<float , 3>> pl;
   // initial velocity update and position estimates
   for(unsigned int i = 0; i < num_particles; ++i){
     p->velocity[i] += force_ext * dt;
     pos_estimate[i] = p->position[i] + p->velocity[i] * dt;
-    test_pos.push_back(std::array<float, 3>{pos_estimate[i].x,pos_estimate[i].y,pos_estimate[i].z});
+    // test_pos.push_back(std::array<float, 3>{pos_estimate[i].x,pos_estimate[i].y,pos_estimate[i].z});
     // since we do not have constraint groups, we can initalize the delta_x in this loop
   }
-  
+
   // generate neighbors
   if(makePointSet){
     // setPointSetTest(nsearch,test_pos);
-  setPointSet(nsearch, pos_estimate);
+    setPointSet(nsearch, pos_estimate);
     makePointSet = false;
   }
   // setPointSet(nsearch, pos_estimate);
   getNeighbors(nsearch,neighbors);
 
+  // Test neighbor array
+  // for(int k = 0; k < neighbors[2].size(); ++k){
+  //   Vector3 pos_test{pos_estimate[neighbors[2][k]].x,pos_estimate[neighbors[2][k]].y,pos_estimate[neighbors[2][k]].z};
+  //   DrawSphereWires(pos_test, 0.2f, 6,6, RED);
+  // }
+
   // check for collision with box
   boxConstraint.checkCollision(pos_estimate, plane);
   //check inter particle collisions
-  // contactConstraint.generateContacts(neighbors, pos_estimate, radius);
+  contactConstraint.generateContacts(neighbors, pos_estimate, radius);
 
   // solve constraints
   for(unsigned int i = 0; i < solver_i; ++i){
@@ -87,12 +93,12 @@ void Simulation::simulate(ParticleData *p, float dt, CompactNSearch::Neighborhoo
       delta_x[i] = glm::vec3(0.0f);
     }
     // Solve constraints
+    contactConstraint.solve(pos_estimate,delta_x,radius);
     boxConstraint.solve(pos_estimate,delta_x, plane);
-    // contactConstraint.solve(pos_estimate,delta_x,radius);
 
     // add delta_x to position estimates
     for(unsigned int i = 0; i < num_particles; ++i){
-      pos_estimate[i] += delta_x[i];
+      pos_estimate[i] += delta_x[i]/2.0f;
     }
   }
 

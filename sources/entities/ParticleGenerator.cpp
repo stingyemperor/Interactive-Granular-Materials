@@ -9,7 +9,8 @@ void BoxPosGen::generate(ParticleData *p){
   // Eigen::Vector3f start_pos(-2.0f,2.0f,0.0f);
   glm::vec3 start_pos(-2.0f,2.0f,0.0f);
   unsigned int side_length  = std::cbrt(max_count);
-  float diameter = p->radius * 2.0f;
+  //TODO change top 2.0 instead of 2.1
+  float diameter = p->radius * 2.1f;
 
   for(unsigned int x = 0; x < side_length; ++x){
     for(unsigned int y = 0; y < side_length; ++y){
