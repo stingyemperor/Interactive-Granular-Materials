@@ -16,9 +16,6 @@ void ContactConstraint::generateContacts(std::array<std::vector<unsigned int>, m
   num_particles = 0;
   // for each particle
   for(int i = 0 ; i < max_count; ++i){
-    // temporrary stuff
-    has_collided.push_back(false);
-    /// -------------
     if(neighbors[i].size() > 0){
       // for each neighbor for a particle
       for(unsigned int index : neighbors[i]){
@@ -28,11 +25,10 @@ void ContactConstraint::generateContacts(std::array<std::vector<unsigned int>, m
         }
       }
     }
-
   }
 }
 
-void ContactConstraint::solve(std::array<glm::vec3, max_count> &positions, std::array<glm::vec3, max_count> &delta_x, float radius){
+void ContactConstraint::solve(std::array<glm::vec3, max_count> &positions, std::array<glm::vec3, max_count> &delta_x,std::array<int,max_count> &num_constraints,float radius){
   if(num_particles>0){
     for(int i = 0; i < max_count; ++i){
       if(particles[i].size() > 0){
@@ -49,21 +45,10 @@ void ContactConstraint::solve(std::array<glm::vec3, max_count> &positions, std::
           // glm::vec3 delta_xj = (distance/2.0f)*(x_ij/x_ij_norm);
           glm::vec3 delta_xi =  0.5f * (distance) * glm::normalize(x_ij);
           glm::vec3 delta_xj = -0.5f * (distance) * glm::normalize(x_ij);
-          
-          if(!has_collided[i] && !has_collided[neighbor_index]){
-            if(has_collided[i] && !has_collided[neighbor_index]){
-              delta_x[i] += delta_xi;
-              has_collided[i] = true;
-            }else if(!has_collided[i] && has_collided[neighbor_index]){
-              delta_x[neighbor_index] += delta_xj;
-              has_collided[neighbor_index] = true;
-            }else{
-              delta_x[i] += delta_xi;
-              delta_x[neighbor_index] += delta_xj;
-              has_collided[i] = true;
-              has_collided[neighbor_index] = true;
-            }
-          }
+          delta_x[i] += delta_xi;
+          delta_x[neighbor_index] += delta_xj;
+          num_constraints[i]+= 1;
+          num_constraints[neighbor_index]+= 1;
         }
       }
     }
@@ -72,5 +57,5 @@ void ContactConstraint::solve(std::array<glm::vec3, max_count> &positions, std::
 }
 
 ContactConstraint::~ContactConstraint(){
-  has_collided.clear();
+  //has_collided.clear();
 }

@@ -17,7 +17,7 @@ struct Simulation{
   ContactConstraint contactConstraint;
   std::array<std::vector<unsigned int>, max_count> neighbors;
   bool makePointSet{true};
-
+  std::array<int,max_count> num_constraints{0};
   std::vector<std::array<float,3>> test_pos;
 
 

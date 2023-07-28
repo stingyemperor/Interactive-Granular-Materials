@@ -56,6 +56,7 @@ void Simulation::simulate(ParticleData *p, float dt, CompactNSearch::Neighborhoo
   // Number of solver iterations
   // TODO make this a member of the class
   unsigned int solver_i = 3;
+  unsigned int solver_stabilization_i = 2;
 
   std::vector<std::array<float , 3>> pl;
   // initial velocity update and position estimates
@@ -75,10 +76,10 @@ void Simulation::simulate(ParticleData *p, float dt, CompactNSearch::Neighborhoo
   // setPointSet(nsearch, pos_estimate);
   getNeighbors(nsearch,neighbors);
 
-  // Test neighbor array
-  // for(int k = 0; k < neighbors[2].size(); ++k){
-  //   Vector3 pos_test{pos_estimate[neighbors[2][k]].x,pos_estimate[neighbors[2][k]].y,pos_estimate[neighbors[2][k]].z};
-  //   DrawSphereWires(pos_test, 0.2f, 6,6, RED);
+  // // Test neighbor array
+  // for(int k = 0; k < neighbors[1].size(); ++k){
+  //   Vector3 pos_test{pos_estimate[neighbors[1][k]].x,pos_estimate[neighbors[1][k]].y,pos_estimate[neighbors[1][k]].z};
+  //   std::cout << neighbors[1][k] << "\n";
   // }
 
   // check for collision with box
@@ -86,33 +87,66 @@ void Simulation::simulate(ParticleData *p, float dt, CompactNSearch::Neighborhoo
   //check inter particle collisions
   contactConstraint.generateContacts(neighbors, pos_estimate, radius);
 
+  for(int i = 0 ; i < solver_stabilization_i; ++i){
+    for(int i = 0; i < num_particles; ++i){
+      delta_x[i] = glm::vec3(0.0f);
+      num_constraints[i] = 0;
+    }
+
+    boxConstraint.solve(p->position,delta_x,plane,num_constraints);
+    contactConstraint.solve(pos_estimate,delta_x,num_constraints,radius);
+
+    for(int i = 0; i < num_particles; ++i){
+      float n = static_cast<float>(num_constraints[i]);
+      std::cout << "num_constraints: " << n << "\n";
+      if(n == 0.0f){
+        p->position[i] += delta_x[i];
+        pos_estimate[i] += delta_x[i];
+      }else{
+        p->position[i] += delta_x[i]/n;
+        pos_estimate[i] += delta_x[i]/n;
+      }
+
+    }
+
+  }
+
+  printVector(pos_estimate[0]);
+
   // solve constraints
   for(unsigned int i = 0; i < solver_i; ++i){
     // reset delta values
     for(unsigned int i = 0; i < num_particles; ++i){
       delta_x[i] = glm::vec3(0.0f);
+      num_constraints[i] = 0;
     }
     // Solve constraints
-    contactConstraint.solve(pos_estimate,delta_x,radius);
-    boxConstraint.solve(pos_estimate,delta_x, plane);
+    boxConstraint.solve(pos_estimate,delta_x, plane,num_constraints);
+    contactConstraint.solve(pos_estimate,delta_x,num_constraints,radius);
 
     // add delta_x to position estimates
     for(unsigned int i = 0; i < num_particles; ++i){
-      pos_estimate[i] += delta_x[i]/2.0f;
+      float n = static_cast<float>(num_constraints[i]);
+      if(n == 0.0f){
+        pos_estimate[i] += delta_x[i];
+      }else{
+        pos_estimate[i] += delta_x[i]/n;
+      }
     }
   }
 
-  //
-
   // // // update veocity and position
-   for(unsigned int i =  0; i < num_particles; ++i){
+  for(unsigned int i =  0; i < num_particles; ++i){
     float fps= 1/dt;
     p->velocity[i] = (pos_estimate[i] - p->position[i])*fps;
     p->position[i] = pos_estimate[i];
-
+    num_constraints[i] = 0;
     //TODO clean up the neighbors array
     neighbors[i].clear();
-   }
+  }
+
+  //contactConstraint.has_collided.clear();
+
 
   // printVector(pos_estimate[0]);
 }

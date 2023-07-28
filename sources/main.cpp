@@ -44,7 +44,7 @@ int main(void)
   box_pos_gen.generate(&particle_system.particles);
   // std::cout<< GetWorkingDirectory() << std::endl;
   // TODO change the radius for search
-  CompactNSearch::NeighborhoodSearch nsearch(0.6f);
+  CompactNSearch::NeighborhoodSearch nsearch(0.5f);
   Plane plane;
 
 
