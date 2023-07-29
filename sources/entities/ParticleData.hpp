@@ -32,32 +32,32 @@ namespace PBD{
       m_invMasses.push_back(1.0f);
       m_x0.push_back(vertex);
       m_x.push_back(vertex);
-      m_v.push_back(Vector3r(0.0,0.0,0.0)); 
-      m_a.push_back(Vector3r(0.0,0.0,0.0)); 
+      m_v.push_back(Vector3r(0.0,0.0,0.0));
+      m_a.push_back(Vector3r(0.0,0.0,0.0));
     }
-    
+
     Real &getMass(const unsigned int i){
-      return m_masses[i];  
+      return m_masses[i];
     }
 
     Real &getInvMass(const unsigned int i){
-      return m_invMasses[i];  
+      return m_invMasses[i];
     }
 
-    void setMass(const unsigned int i, Real &mass){
-      m_masses[i] = mass;  
+    void setMass(const unsigned int i, const Real mass){
+      m_masses[i] = mass;
     }
 
-    void setInvMass(const unsigned int i, Real &mass){
-      m_invMasses[i] = mass;  
+    void setInvMass(const unsigned int i, const Real mass){
+      m_invMasses[i] = mass;
     }
 
     Vector3r &getPosition(const unsigned int i){
-      return m_x[i];  
+      return m_x[i];
     }
 
     Vector3r &getPosition0(const unsigned int i){
-      return m_x0[i];  
+      return m_x0[i];
     }
 
     void setPosition(const unsigned int i, const Vector3r &pos){
@@ -69,28 +69,32 @@ namespace PBD{
     }
 
     Vector3r &getVelocity(const unsigned int i){
-      return m_v[i];  
+      return m_v[i];
     }
 
     Vector3r &getAcceleration(const unsigned int i){
-      return m_a[i];  
+      return m_a[i];
     }
 
     void setVelocity(const unsigned int i,const Vector3r &vel){
-      m_v[i] = vel; 
+      m_v[i] = vel;
     }
 
     void setAcceleration(const unsigned int i,const Vector3r &accel){
-      m_v[i] = accel; 
+      m_v[i] = accel;
     }
 
     const unsigned int getNumberOfParticles() const{
       return (unsigned int)m_x.size();
     }
-    
+
     const std::vector<Vector3r>& getVertices() const{
-      return m_x;  
-    }  
+      return m_x;
+    }
+
+    unsigned int size() const{
+      return (unsigned int)m_x.size();
+    }
 
     void release(){
       m_masses.clear();
