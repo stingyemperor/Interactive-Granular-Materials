@@ -1,7 +1,6 @@
 #pragma once
 
 #include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/src/Core/util/Constants.h>
 #include <float.h>
 
 typedef float Real;

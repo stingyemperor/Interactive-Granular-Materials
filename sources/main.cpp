@@ -38,14 +38,14 @@ int main(void)
 
   // ------------ Particle Stuff --------------------------------------
 
-  ParticleSystem particle_system;
-  BoxPosGen box_pos_gen;
-  Simulation simulation;
-  box_pos_gen.generate(&particle_system.particles);
-  // std::cout<< GetWorkingDirectory() << std::endl;
-  // TODO change the radius for search
-  CompactNSearch::NeighborhoodSearch nsearch(0.5f);
-  Plane plane;
+  // ParticleSystem particle_system;
+  // BoxPosGen box_pos_gen;
+  // Simulation simulation;
+  // box_pos_gen.generate(&particle_system.particles);
+  // // std::cout<< GetWorkingDirectory() << std::endl;
+  // // TODO change the radius for search
+  // CompactNSearch::NeighborhoodSearch nsearch(0.5f);
+  // Plane plane;
 
 
   // ------------ Particle Stuff --------------------------------------
@@ -68,10 +68,10 @@ int main(void)
     BeginMode3D(camera);
     BeginShaderMode(alpha);
 
-    particle_system.draw(camera,sphere);
-    // std::cout << GetFrameTime() << std::endl;
-    simulation.simulate(&particle_system.particles, 0.01f, nsearch,plane);
-    plane.draw();
+    // particle_system.draw(camera,sphere);
+    // // std::cout << GetFrameTime() << std::endl;
+    // simulation.simulate(&particle_system.particles, 0.01f, nsearch,plane);
+    // plane.draw();
     EndShaderMode();
     EndMode3D();
 
