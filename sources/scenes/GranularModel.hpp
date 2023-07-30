@@ -20,9 +20,11 @@ namespace PBD{
     void releaseParticles();
     void cleanupModel();
     void reset();
-    
+    void resizeGranularParticles(const unsigned int newSize);
+
     ParticleData &getParticles();
-    void initModel(const unsigned int nGranularParticles, Vector3r* granularParticles, const unsigned int nBoundaryParticles, Vector3r* boundaryParticles); 
+    void initModel(const unsigned int nGranularParticles, Vector3r* granularParticles, 
+                   const unsigned int nBoundaryParticles, Vector3r* boundaryParticles); 
     const unsigned int numBoundaryParticles() const { return (unsigned int)m_boundaryX.size();} 
     Real getParticleRadius() const {return m_particleRadius;}
     void setParticleRadius(Real val) {m_particleRadius = val;}

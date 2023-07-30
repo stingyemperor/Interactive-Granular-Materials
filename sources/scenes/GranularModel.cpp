@@ -1,4 +1,5 @@
 #include "GranularModel.hpp"
+#include "utils/CompactNSearch.h"
 
 using namespace PBD;
 
@@ -36,8 +37,37 @@ void GranularModel::initMasses(){
   }
 }
 
+void GranularModel::resizeGranularParticles(const unsigned int newSize){
+  m_particles.resize(newSize); 
+  m_deltaX.resize(newSize);
+}
+
 void GranularModel::releaseParticles(){
   m_particles.release();
   m_deltaX.clear();
 }
 
+void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* granularParticles,
+                              const unsigned int nBoundaryParticles, Vector3r* boundaryParticles){
+  
+  releaseParticles();
+  resizeGranularParticles(nGranularParticles);
+
+  for(int i = 0; i < (int)nGranularParticles; ++i){
+    m_particles.getPosition0(i) = granularParticles[i];
+  }
+  
+
+  // TODO boundary psi stuff????
+  m_boundaryX.resize(nBoundaryParticles);
+  for(int i = 0; i < (int)nBoundaryParticles; ++i){
+    m_boundaryX[i] = boundaryParticles[i];
+  }
+
+  initMasses();
+
+  // initalize neighbourhood search
+  if(m_neighborhoodSearch == NULL){
+    m_neighborhoodSearch = new CompactNSearch::NeighborhoodSearch(1.0f);
+  }
+}

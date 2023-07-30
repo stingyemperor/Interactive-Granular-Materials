@@ -96,6 +96,15 @@ namespace PBD{
       return (unsigned int)m_x.size();
     }
 
+    void resize(const unsigned int newSize){
+      m_masses.resize(newSize);
+      m_invMasses.resize(newSize);
+      m_x0.resize(newSize);
+      m_x.resize(newSize);
+      m_v.resize(newSize);
+      m_a.resize(newSize);
+    }
+
     void release(){
       m_masses.clear();
       m_invMasses.clear();
