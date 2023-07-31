@@ -1,4 +1,5 @@
 #include "GranularModel.hpp"
+#include "entities/NeighborhoodSearchSpatialHashing.h"
 #include "utils/CompactNSearch.h"
 
 using namespace PBD;
@@ -23,6 +24,18 @@ void GranularModel::cleanupModel(){
 ParticleData &GranularModel::getParticles(){
   return m_particles;
 }
+
+void GranularModel::reset(){
+  const unsigned int nPoints = m_particles.size();
+  for(unsigned int i = 0; i < nPoints; ++i){
+    const Vector3r& x0 = m_particles.getPosition0(i);
+    m_particles.setPosition(i, x0);
+    m_particles.getVelocity(i).setZero();
+    m_particles.getAcceleration(i).setZero();
+    m_deltaX[i].setZero();
+  }
+}
+
 
 void GranularModel::initMasses(){
   const int nParticles = (int)m_particles.size();
@@ -68,6 +81,10 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
 
   // initalize neighbourhood search
   if(m_neighborhoodSearch == NULL){
-    m_neighborhoodSearch = new CompactNSearch::NeighborhoodSearch(1.0f);
+    m_neighborhoodSearch = new NeighborhoodSearchSpatialHashing(m_particles.size(),1.0f);
   }
+
+  m_neighborhoodSearch->setRadius(1.0f);
+
+  reset();
 }

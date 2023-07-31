@@ -1,13 +1,27 @@
-#include "entities/ParticleGenerator.hpp"
-#include "entities/ParticleUpdater.hpp"
 #include "raylib.h"
 #include "iostream"
-#include "entities/ParticleSystem.hpp"
-#include "utils/CompactNSearch.h"
-#include "utils/PointSet.h"
 #include <array>
 #include <memory>
-#include <entities/Plane.hpp>
+#include "utils/Common.hpp"
+#include "scenes/GranularModel.hpp"
+#include "scenes/TimeStepGranularModel.hpp"
+#include "entities/Simulation.hpp"
+
+using namespace PBD;
+using namespace Utilities;
+
+void timeStep();
+void buildModel();
+void createBreakingDam();
+void addWall(const Vector3r &minX, const Vector3r &maxX, std::vector<Vector3r>&boundaryParticles);
+void initBoundaryData();
+void render();
+void cleanUp();
+void reset();
+
+
+
+GranularModel model;
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
