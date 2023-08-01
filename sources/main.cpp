@@ -2,6 +2,7 @@
 #include "iostream"
 #include <array>
 #include <memory>
+#include <vector>
 #include "utils/Common.hpp"
 #include "scenes/GranularModel.hpp"
 #include "scenes/TimeStepGranularModel.hpp"
@@ -14,7 +15,7 @@ void timeStep();
 void buildModel();
 void createBreakingDam();
 void addWall(const Vector3r &minX, const Vector3r &maxX, std::vector<Vector3r>&boundaryParticles);
-void initBoundaryData();
+void initBoundaryData(std::vector<Vector3r> &boundaryParticles);
 void render();
 void cleanUp();
 void reset();
@@ -22,6 +23,17 @@ void reset();
 
 
 GranularModel model;
+TimeStepGranularModel simulation;
+
+const Real particleRadius = static_cast<Real>(0.025);
+const unsigned int width = 15;
+const unsigned int depth = 15;
+const unsigned int height = 20;
+const Real containerWidth = (width + 1)*particleRadius*static_cast<Real>(2.0*5.0);
+const Real containerDepth = (depth + 1)*particleRadius*static_cast<Real>(2.0);
+const Real containerHeight = 4.0;
+
+
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -61,7 +73,7 @@ int main(void)
   // CompactNSearch::NeighborhoodSearch nsearch(0.5f);
   // Plane plane;
 
-
+  createBreakingDam(); 
   // ------------ Particle Stuff --------------------------------------
   // Main game loop
   while (!WindowShouldClose())        // Detect window close button or ESC key
@@ -81,11 +93,19 @@ int main(void)
 
     BeginMode3D(camera);
     BeginShaderMode(alpha);
-
+  
+    simulation.step(model);
+    for(unsigned int i = 0; i < model.m_particles.size(); ++i){
+      Vector3r particle_pos = model.getParticles().getPosition(i); 
+      Vector3 pos = {particle_pos.x(),particle_pos.y(),particle_pos.z()}; 
+      DrawBillboard(camera, sphere, pos, 0.05, WHITE);
+      // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
+    }
     // particle_system.draw(camera,sphere);
     // // std::cout << GetFrameTime() << std::endl;
     // simulation.simulate(&particle_system.particles, 0.01f, nsearch,plane);
     // plane.draw();
+    DrawGrid(6,6);
     EndShaderMode();
     EndMode3D();
 
@@ -100,3 +120,47 @@ int main(void)
 
   return 0;
 }
+
+
+void createBreakingDam(){
+  const Real diam = 2.0*particleRadius;
+  const Real startX = -static_cast<Real>(0.5)*containerWidth + diam;
+  const Real startY = diam;
+  const Real startZ = -static_cast<Real>(0.5)*containerDepth + diam;
+  const Real yshift = sqrt(static_cast<Real>(3.0))*particleRadius;
+
+  std::vector<Vector3r> granularParticles;
+  granularParticles.resize(width*height*depth);
+
+  for(unsigned int i = 0; i < (int)width; ++i){
+    for(unsigned int j = 0; j < (int)height; ++j){
+      for(unsigned int k = 0; k < (int)depth; ++k){
+        granularParticles[i*height*depth + j*depth + k] = diam*Vector3r((Real)i, (Real)j, (Real)k) + Vector3r(startX, startY, startZ);
+      }
+    }
+  }
+   
+  model.setParticleRadius(particleRadius);
+
+  // boudary particle stuff
+  std::vector<Vector3r> boundaryParticles;
+  // initBoundaryData(boundaryParticles);
+    
+  // init model stuff
+  model.initModel((unsigned int)granularParticles.size(), granularParticles.data(), (unsigned int)boundaryParticles.size(), boundaryParticles.data());
+}
+
+void initBoundaryData(std::vector<Vector3r> &boundaryParticles){
+  const Real x1 = -containerWidth / 2.0;
+  const Real x2 =  containerWidth / 2.0;
+  const Real y1 = 0.0;
+  const Real y2 = containerHeight;
+  const Real z1 = -containerDepth / 2.0;
+  const Real z2 =  containerDepth / 2.0;
+
+  const Real diam = 2.0*particleRadius;
+
+  // Floor
+  // addWall(Vector3r(x1,y1,z1),Vector3r(x2,y1,z2),boundaryParticles);
+}
+

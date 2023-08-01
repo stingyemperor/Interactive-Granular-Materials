@@ -17,8 +17,10 @@ void TimeStepGranularModel::step(GranularModel &model){
 
 
   // Neighborhood search
-  model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0),model.numBoundaryParticles(), &model.getBoundaryX(0));
+  // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0),model.numBoundaryParticles(), &model.getBoundaryX(0));
 
+  // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0));
+  model.getCompactNSearch()->find_neighbors();
   // Constraint Projection
 
 

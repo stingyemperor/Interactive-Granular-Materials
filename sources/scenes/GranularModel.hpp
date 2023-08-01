@@ -15,7 +15,10 @@ namespace PBD{
     ParticleData m_particles;
     std::vector<Vector3r> m_boundaryX;
     std::vector<Vector3r> m_deltaX;
+    std::vector<Vector3r> m_neighbors;
+
     NeighborhoodSearchSpatialHashing *m_neighborhoodSearch; 
+    CompactNSearch::NeighborhoodSearch *m_compactNSearch;
     void initMasses();
     void releaseParticles();
     void cleanupModel();
@@ -29,6 +32,7 @@ namespace PBD{
     Real getParticleRadius() const {return m_particleRadius;}
     void setParticleRadius(Real val) {m_particleRadius = val;}
     NeighborhoodSearchSpatialHashing* getNeighborhoodSearch(){return m_neighborhoodSearch;}
+    CompactNSearch::NeighborhoodSearch* getCompactNSearch(){return m_compactNSearch;}
     
     Vector3r& getBoundaryX(const unsigned int i){
       return m_boundaryX[i];

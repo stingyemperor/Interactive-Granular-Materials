@@ -8,6 +8,7 @@ using namespace PBD;
 GranularModel::GranularModel() : m_particles(){
   m_particleRadius = static_cast<Real>(0.2);
   m_neighborhoodSearch = NULL;
+  m_compactNSearch = NULL;
 }
 
 GranularModel::~GranularModel(void){
@@ -19,6 +20,7 @@ void GranularModel::cleanupModel(){
   m_boundaryX.clear();
   m_deltaX.clear();
   delete m_neighborhoodSearch;
+  delete m_compactNSearch;
 }
 
 ParticleData &GranularModel::getParticles(){
@@ -86,5 +88,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
 
   m_neighborhoodSearch->setRadius(1.0f);
 
+  // Initialize compactNsearchNeighborhood
+  m_compactNSearch->set_radius(0.1);
   reset();
 }
