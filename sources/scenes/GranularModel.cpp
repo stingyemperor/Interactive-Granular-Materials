@@ -89,6 +89,6 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
   m_neighborhoodSearch->setRadius(1.0f);
 
   // Initialize compactNsearchNeighborhood
-  m_compactNSearch->set_radius(0.1);
+  // m_compactNSearch->set_radius(0.1);
   reset();
 }

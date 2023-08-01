@@ -49,7 +49,7 @@ int main(void)
   Shader alpha = LoadShader(NULL,"../assets/depth.fs");
   // Define the camera to look into our 3d world
   Camera3D camera = { 0 };
-  camera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Camera position
+  camera.position = (Vector3){ 0.0f, 4.0f, 6.0f }; // Camera position
   camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
   camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
   camera.fovy = 45.0f;                                // Camera field-of-view Y
@@ -80,7 +80,7 @@ int main(void)
   {
     // Update
     //----------------------------------------------------------------------------------
-    UpdateCamera(&camera, CAMERA_FREE);
+    // UpdateCamera(&camera, CAMERA_FREE);
 
     if (IsKeyDown('Z')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     //----------------------------------------------------------------------------------
@@ -100,6 +100,12 @@ int main(void)
       Vector3 pos = {particle_pos.x(),particle_pos.y(),particle_pos.z()}; 
       DrawBillboard(camera, sphere, pos, 0.05, WHITE);
       // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
+    }
+
+    for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
+      Vector3r particle_pos = model.getBoundaryX(i);
+      Vector3 pos = {particle_pos.x(), particle_pos.y(), particle_pos.z()};
+      DrawSphereWires(pos, 0.025, 3, 3, WHITE);
     }
     // particle_system.draw(camera,sphere);
     // // std::cout << GetFrameTime() << std::endl;
@@ -144,10 +150,30 @@ void createBreakingDam(){
 
   // boudary particle stuff
   std::vector<Vector3r> boundaryParticles;
-  // initBoundaryData(boundaryParticles);
+  initBoundaryData(boundaryParticles);
     
   // init model stuff
   model.initModel((unsigned int)granularParticles.size(), granularParticles.data(), (unsigned int)boundaryParticles.size(), boundaryParticles.data());
+}
+
+void addWall(const Vector3r &minX, const Vector3r &maxX, std::vector<Vector3r> &boundaryParticles ){
+  const Real particleDistance = static_cast<Real>(2.0)*model.getParticleRadius();
+  const Vector3r diff = maxX - minX;
+  const unsigned int stepsX = (unsigned int)(diff[0] / particleDistance) + 1u;
+  const unsigned int stepsY = (unsigned int)(diff[1] / particleDistance) + 1u;
+  const unsigned int stepsZ = (unsigned int)(diff[2] / particleDistance) + 1u;
+  
+  const unsigned int startIndex = (unsigned int)boundaryParticles.size();
+  boundaryParticles.resize(startIndex + stepsX * stepsY * stepsZ);
+
+  for(int x = 0; x < (int)stepsX; ++x){
+    for(int y = 0; y < (int)stepsY; ++y){
+      for(int z = 0; z < (int)stepsZ; ++z){
+        const Vector3r currPos = minX + Vector3r(x*particleDistance, y*particleDistance, z*particleDistance);    
+        boundaryParticles[startIndex + x*stepsY*stepsZ + y*stepsZ + z] = currPos;
+      }
+    }
+  }
 }
 
 void initBoundaryData(std::vector<Vector3r> &boundaryParticles){
@@ -161,6 +187,16 @@ void initBoundaryData(std::vector<Vector3r> &boundaryParticles){
   const Real diam = 2.0*particleRadius;
 
   // Floor
-  // addWall(Vector3r(x1,y1,z1),Vector3r(x2,y1,z2),boundaryParticles);
+  addWall(Vector3r(x1,y1,z1),Vector3r(x2,y1,z2),boundaryParticles);
+  // Top
+  addWall(Vector3r(x1,y2,z1),Vector3r(x2,y2,z2),boundaryParticles);
+  // Left
+  addWall(Vector3r(x1,y1,z1),Vector3r(x1,y2,z2),boundaryParticles);
+  // Right
+  addWall(Vector3r(x2,y1,z1),Vector3r(x2,y2,z2),boundaryParticles);
+  // Back
+  addWall(Vector3r(x1,y1,z1),Vector3r(x2,y2,z1),boundaryParticles);
+  // Front
+  addWall(Vector3r(x1,y1,z2),Vector3r(x2,y2,z2),boundaryParticles);
 }
 

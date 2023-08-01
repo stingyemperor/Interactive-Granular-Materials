@@ -2,6 +2,7 @@
 #include "../entities/TimeManager.hpp"
 #include "../entities/Simulation.hpp"
 #include "entities/ParticleData.hpp"
+#include "entities/TimeIntegration.hpp"
 
 using namespace PBD;
 
@@ -14,13 +15,15 @@ void TimeStepGranularModel::step(GranularModel &model){
   clearAccelerations(model);
 
   // TIme intergration
-
-
+  for(unsigned int i = 0; i < pd.size(); ++i){
+    model.getDeltaX(i).setZero();
+    // TimeIntegration::semiImplicitEuler(h, pd.getMass(i), pd.getPosition(i), pd.getVelocity(i), pd.getAcceleration(i));
+  }
   // Neighborhood search
   // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0),model.numBoundaryParticles(), &model.getBoundaryX(0));
 
   // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0));
-  model.getCompactNSearch()->find_neighbors();
+  // model.getCompactNSearch()->find_neighbors();
   // Constraint Projection
 
 
