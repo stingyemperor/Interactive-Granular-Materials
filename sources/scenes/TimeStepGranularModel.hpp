@@ -9,7 +9,7 @@ namespace PBD {
     TimeStepGranularModel(){};
     ~TimeStepGranularModel(){};
 
-    void step(GranularModel &model);
+    void step(GranularModel &model,CompactNSearch::NeighborhoodSearch &nsearch);
     void reset();
     
   };

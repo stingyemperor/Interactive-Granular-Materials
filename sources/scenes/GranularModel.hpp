@@ -15,15 +15,20 @@ namespace PBD{
     ParticleData m_particles;
     std::vector<Vector3r> m_boundaryX;
     std::vector<Vector3r> m_deltaX;
-    std::vector<Vector3r> m_neighbors;
+    // std::vector<Vector3r> m_neighbors;
+    std::vector<std::vector<unsigned int>> m_neighbors;
+    unsigned int m_pointId1;
+    unsigned int m_pointId2;
 
     NeighborhoodSearchSpatialHashing *m_neighborhoodSearch; 
-    CompactNSearch::NeighborhoodSearch *m_compactNSearch;
+    // CompactNSearch::NeighborhoodSearch *m_compactNSearch;
     void initMasses();
     void releaseParticles();
     void cleanupModel();
     void reset();
     void resizeGranularParticles(const unsigned int newSize);
+    void generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch,unsigned int point_set_id, CompactNSearch::PointSet &ps);
+    void clearNeighbors();
 
     ParticleData &getParticles();
     void initModel(const unsigned int nGranularParticles, Vector3r* granularParticles, 
@@ -32,7 +37,7 @@ namespace PBD{
     Real getParticleRadius() const {return m_particleRadius;}
     void setParticleRadius(Real val) {m_particleRadius = val;}
     NeighborhoodSearchSpatialHashing* getNeighborhoodSearch(){return m_neighborhoodSearch;}
-    CompactNSearch::NeighborhoodSearch* getCompactNSearch(){return m_compactNSearch;}
+    // CompactNSearch::NeighborhoodSearch* getCompactNSearch(){return m_compactNSearch;}
     
     Vector3r& getBoundaryX(const unsigned int i){
       return m_boundaryX[i];

@@ -7,15 +7,18 @@
 #include "scenes/GranularModel.hpp"
 #include "scenes/TimeStepGranularModel.hpp"
 #include "entities/Simulation.hpp"
+#include "utils/CompactNSearch.h"
 
 using namespace PBD;
 using namespace Utilities;
+using namespace CompactNSearch;
 
 void timeStep();
 void buildModel();
 void createBreakingDam();
 void addWall(const Vector3r &minX, const Vector3r &maxX, std::vector<Vector3r>&boundaryParticles);
 void initBoundaryData(std::vector<Vector3r> &boundaryParticles);
+void createPointSet(NeighborhoodSearch &nsearch);
 void render();
 void cleanUp();
 void reset();
@@ -24,6 +27,7 @@ void reset();
 
 GranularModel model;
 TimeStepGranularModel simulation;
+NeighborhoodSearch nsearch(0.1f);
 
 const Real particleRadius = static_cast<Real>(0.025);
 const unsigned int width = 15;
@@ -200,3 +204,7 @@ void initBoundaryData(std::vector<Vector3r> &boundaryParticles){
   addWall(Vector3r(x1,y1,z2),Vector3r(x2,y2,z2),boundaryParticles);
 }
 
+void createPointSet(NeighborhoodSearch &nsearch){
+  model.m_pointId1 = nsearch.add_point_set(model.m_particles.getPosition(0).data(), model.m_particles.size());
+  model.m_pointId2 = nsearch.add_point_set(model.m_boundaryX.front().data(), model.m_boundaryX.size());
+}

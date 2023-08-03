@@ -3,10 +3,11 @@
 #include "../entities/Simulation.hpp"
 #include "entities/ParticleData.hpp"
 #include "entities/TimeIntegration.hpp"
+#include "utils/CompactNSearch.h"
 
 using namespace PBD;
 
-void TimeStepGranularModel::step(GranularModel &model){
+void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::NeighborhoodSearch &nsearch){
   
   TimeManager *tm = TimeManager::getCurrent();
   const Real h = tm->getTimeStepSize();

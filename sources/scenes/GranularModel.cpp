@@ -1,6 +1,7 @@
 #include "GranularModel.hpp"
 #include "entities/NeighborhoodSearchSpatialHashing.h"
 #include "utils/CompactNSearch.h"
+#include "utils/PointSet.h"
 
 using namespace PBD;
 
@@ -8,7 +9,7 @@ using namespace PBD;
 GranularModel::GranularModel() : m_particles(){
   m_particleRadius = static_cast<Real>(0.2);
   m_neighborhoodSearch = NULL;
-  m_compactNSearch = NULL;
+  // m_compactNSearch = NULL;
 }
 
 GranularModel::~GranularModel(void){
@@ -20,7 +21,7 @@ void GranularModel::cleanupModel(){
   m_boundaryX.clear();
   m_deltaX.clear();
   delete m_neighborhoodSearch;
-  delete m_compactNSearch;
+  // delete m_compactNSearch;
 }
 
 ParticleData &GranularModel::getParticles(){
@@ -53,7 +54,7 @@ void GranularModel::initMasses(){
 }
 
 void GranularModel::resizeGranularParticles(const unsigned int newSize){
-  m_particles.resize(newSize); 
+  m_particles.resize(newSize);
   m_deltaX.resize(newSize);
 }
 
@@ -64,14 +65,14 @@ void GranularModel::releaseParticles(){
 
 void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* granularParticles,
                               const unsigned int nBoundaryParticles, Vector3r* boundaryParticles){
-  
+
   releaseParticles();
   resizeGranularParticles(nGranularParticles);
 
   for(int i = 0; i < (int)nGranularParticles; ++i){
     m_particles.getPosition0(i) = granularParticles[i];
   }
-  
+
 
   // TODO boundary psi stuff????
   m_boundaryX.resize(nBoundaryParticles);
@@ -86,9 +87,18 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
     m_neighborhoodSearch = new NeighborhoodSearchSpatialHashing(m_particles.size(),1.0f);
   }
 
-  m_neighborhoodSearch->setRadius(1.0f);
+  // m_neighborhoodSearch->setRadius(1.0f);
 
   // Initialize compactNsearchNeighborhood
   // m_compactNSearch->set_radius(0.1);
   reset();
+}
+
+// neighbors not including boundary particles
+void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch, unsigned int point_set_id, CompactNSearch::PointSet &ps){
+  for(unsigned int i = 0 ; i < ps.n_points() ; ++i){
+    for(unsigned int j = 0; j < ps.n_neighbors(point_set_id,i); ++j){
+      m_neighbors[i].push_back(ps.neighbor(point_set_id, i, j)); 
+    }  
+  }
 }
