@@ -15,7 +15,7 @@ using namespace CompactNSearch;
 
 void timeStep();
 void buildModel();
-void createBreakingDam();
+void createBreakingDam(NeighborhoodSearch &nsearch);
 void addWall(const Vector3r &minX, const Vector3r &maxX, std::vector<Vector3r>&boundaryParticles);
 void initBoundaryData(std::vector<Vector3r> &boundaryParticles);
 void createPointSet(NeighborhoodSearch &nsearch);
@@ -27,7 +27,7 @@ void reset();
 
 GranularModel model;
 TimeStepGranularModel simulation;
-NeighborhoodSearch nsearch(0.1f);
+NeighborhoodSearch nsearch(0.05f);
 
 const Real particleRadius = static_cast<Real>(0.025);
 const unsigned int width = 15;
@@ -77,7 +77,7 @@ int main(void)
   // CompactNSearch::NeighborhoodSearch nsearch(0.5f);
   // Plane plane;
 
-  createBreakingDam(); 
+  createBreakingDam(nsearch); 
   // ------------ Particle Stuff --------------------------------------
   // Main game loop
   while (!WindowShouldClose())        // Detect window close button or ESC key
@@ -98,7 +98,8 @@ int main(void)
     BeginMode3D(camera);
     BeginShaderMode(alpha);
   
-    simulation.step(model);
+    std::cout << GetFPS()  << "\n"; 
+    simulation.step(model, nsearch);
     for(unsigned int i = 0; i < model.m_particles.size(); ++i){
       Vector3r particle_pos = model.getParticles().getPosition(i); 
       Vector3 pos = {particle_pos.x(),particle_pos.y(),particle_pos.z()}; 
@@ -106,11 +107,11 @@ int main(void)
       // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
     }
 
-    for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
-      Vector3r particle_pos = model.getBoundaryX(i);
-      Vector3 pos = {particle_pos.x(), particle_pos.y(), particle_pos.z()};
-      DrawSphereWires(pos, 0.025, 3, 3, WHITE);
-    }
+    // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
+    //   Vector3r particle_pos = model.getBoundaryX(i);
+    //   Vector3 pos = {particle_pos.x(), particle_pos.y(), particle_pos.z()};
+    //   DrawSphereWires(pos, 0.025, 3, 3, WHITE);
+    // }
     // particle_system.draw(camera,sphere);
     // // std::cout << GetFrameTime() << std::endl;
     // simulation.simulate(&particle_system.particles, 0.01f, nsearch,plane);
@@ -132,7 +133,7 @@ int main(void)
 }
 
 
-void createBreakingDam(){
+void createBreakingDam(NeighborhoodSearch &nsearch){
   const Real diam = 2.0*particleRadius;
   const Real startX = -static_cast<Real>(0.5)*containerWidth + diam;
   const Real startY = diam;
@@ -158,6 +159,8 @@ void createBreakingDam(){
     
   // init model stuff
   model.initModel((unsigned int)granularParticles.size(), granularParticles.data(), (unsigned int)boundaryParticles.size(), boundaryParticles.data());
+
+  createPointSet(nsearch);
 }
 
 void addWall(const Vector3r &minX, const Vector3r &maxX, std::vector<Vector3r> &boundaryParticles ){
@@ -208,3 +211,6 @@ void createPointSet(NeighborhoodSearch &nsearch){
   model.m_pointId1 = nsearch.add_point_set(model.m_particles.getPosition(0).data(), model.m_particles.size());
   model.m_pointId2 = nsearch.add_point_set(model.m_boundaryX.front().data(), model.m_boundaryX.size());
 }
+
+
+

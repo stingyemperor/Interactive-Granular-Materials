@@ -20,8 +20,12 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
     model.getDeltaX(i).setZero();
     // TimeIntegration::semiImplicitEuler(h, pd.getMass(i), pd.getPosition(i), pd.getVelocity(i), pd.getAcceleration(i));
   }
+
   // Neighborhood search
+  model.generateNeighbors(nsearch, model.m_pointId1);  
+  // std::cout << model.m_neighbors.size() << "\n";
   // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0),model.numBoundaryParticles(), &model.getBoundaryX(0));
+
 
   // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0));
   // model.getCompactNSearch()->find_neighbors();
@@ -32,6 +36,9 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
 
 
   // compute new time
+  //
+  // Clear Neighbors
+  model.clearNeighbors();
 }
 
 void TimeStepGranularModel::clearAccelerations(GranularModel &granularModel){

@@ -8,8 +8,6 @@ using namespace PBD;
 
 GranularModel::GranularModel() : m_particles(){
   m_particleRadius = static_cast<Real>(0.2);
-  m_neighborhoodSearch = NULL;
-  // m_compactNSearch = NULL;
 }
 
 GranularModel::~GranularModel(void){
@@ -20,7 +18,6 @@ void GranularModel::cleanupModel(){
   m_particles.release();
   m_boundaryX.clear();
   m_deltaX.clear();
-  delete m_neighborhoodSearch;
   // delete m_compactNSearch;
 }
 
@@ -82,23 +79,27 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
 
   initMasses();
 
-  // initalize neighbourhood search
-  if(m_neighborhoodSearch == NULL){
-    m_neighborhoodSearch = new NeighborhoodSearchSpatialHashing(m_particles.size(),1.0f);
-  }
-
-  // m_neighborhoodSearch->setRadius(1.0f);
-
-  // Initialize compactNsearchNeighborhood
-  // m_compactNSearch->set_radius(0.1);
   reset();
 }
 
-// neighbors not including boundary particles
-void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch, unsigned int point_set_id, CompactNSearch::PointSet &ps){
+// neoghbors not including boundary particles
+void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch, unsigned int point_set_id){
+  nsearch.find_neighbors();
+  CompactNSearch::PointSet const& ps = nsearch.point_set(point_set_id);
   for(unsigned int i = 0 ; i < ps.n_points() ; ++i){
+    std::vector<unsigned int> neighbors;
     for(unsigned int j = 0; j < ps.n_neighbors(point_set_id,i); ++j){
-      m_neighbors[i].push_back(ps.neighbor(point_set_id, i, j)); 
-    }  
+      //std::cout <<  j << "\n";
+
+      const unsigned int pid = ps.neighbor(point_set_id, i, j);
+      neighbors.push_back(pid);
+      //m_neighbors[i].push_back(pid);
+      //std::cout << "num_neighbors" + m_neighbors.size() << "\n";
+    }
+    m_neighbors.push_back(neighbors);
   }
+}
+
+void GranularModel::clearNeighbors(){
+  m_neighbors.clear();
 }
