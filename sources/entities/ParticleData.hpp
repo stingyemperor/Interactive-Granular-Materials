@@ -14,6 +14,7 @@ namespace PBD{
     std::vector<Real> m_invMasses;
     std::vector<Vector3r> m_x0;
     std::vector<Vector3r> m_x;
+    std::vector<Vector3r> m_oldX;
     std::vector<Vector3r> m_v;
     std::vector<Vector3r> m_a;
 
@@ -23,6 +24,7 @@ namespace PBD{
       m_invMasses.clear();
       m_x0.clear();
       m_x.clear();
+      m_oldX.clear();
       m_v.clear();
       m_a.clear();
     }
@@ -32,6 +34,7 @@ namespace PBD{
       m_invMasses.push_back(1.0f);
       m_x0.push_back(vertex);
       m_x.push_back(vertex);
+      m_oldX.push_back(vertex);
       m_v.push_back(Vector3r(0.0,0.0,0.0));
       m_a.push_back(Vector3r(0.0,0.0,0.0));
     }
@@ -60,12 +63,20 @@ namespace PBD{
       return m_x0[i];
     }
 
+    Vector3r &getOldPosition(const unsigned int i){
+      return m_oldX[i];
+    }
+
     void setPosition(const unsigned int i, const Vector3r &pos){
       m_x[i] = pos;
     }
 
     void setPosition0(const unsigned int i, const Vector3r &pos){
       m_x0[i] = pos;
+    }
+    
+    void setOldPosition(const unsigned int i, const Vector3r &pos){
+      m_oldX[i] = pos;   
     }
 
     Vector3r &getVelocity(const unsigned int i){
@@ -101,6 +112,7 @@ namespace PBD{
       m_invMasses.resize(newSize);
       m_x0.resize(newSize);
       m_x.resize(newSize);
+      m_oldX.resize(newSize);
       m_v.resize(newSize);
       m_a.resize(newSize);
     }
@@ -110,6 +122,7 @@ namespace PBD{
       m_invMasses.clear();
       m_x.clear();
       m_x0.clear();
+      m_oldX.clear();
       m_v.clear();
       m_a.clear();
     }

@@ -7,7 +7,7 @@ using namespace PBD;
 
 
 GranularModel::GranularModel() : m_particles(){
-  m_particleRadius = static_cast<Real>(0.2);
+  m_particleRadius = static_cast<Real>(0.025);
 }
 
 GranularModel::~GranularModel(void){
@@ -30,6 +30,7 @@ void GranularModel::reset(){
   for(unsigned int i = 0; i < nPoints; ++i){
     const Vector3r& x0 = m_particles.getPosition0(i);
     m_particles.setPosition(i, x0);
+    m_particles.setOldPosition(i, x0);
     m_particles.getVelocity(i).setZero();
     m_particles.getAcceleration(i).setZero();
     m_deltaX[i].setZero();
@@ -83,23 +84,38 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
 }
 
 // neoghbors not including boundary particles
-void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch, unsigned int point_set_id){
+void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch, unsigned int point_set_id_1, unsigned int point_set_id_2){
   nsearch.find_neighbors();
-  CompactNSearch::PointSet const& ps = nsearch.point_set(point_set_id);
+  CompactNSearch::PointSet const& ps = nsearch.point_set(point_set_id_1);
   for(unsigned int i = 0 ; i < ps.n_points() ; ++i){
     std::vector<unsigned int> neighbors;
-    for(unsigned int j = 0; j < ps.n_neighbors(point_set_id,i); ++j){
+    for(unsigned int j = 0; j < ps.n_neighbors(point_set_id_1,i); ++j){
       //std::cout <<  j << "\n";
 
-      const unsigned int pid = ps.neighbor(point_set_id, i, j);
+      const unsigned int pid = ps.neighbor(point_set_id_1, i, j);
       neighbors.push_back(pid);
       //m_neighbors[i].push_back(pid);
       //std::cout << "num_neighbors" + m_neighbors.size() << "\n";
     }
     m_neighbors.push_back(neighbors);
   }
+
+  CompactNSearch::PointSet const& ps2 = nsearch.point_set(point_set_id_2);
+  for(unsigned int i = 0 ; i < ps2.n_points() ; ++i){
+    std::vector<unsigned int> neighbors;
+    for(unsigned int j = 0; j < ps2.n_neighbors(point_set_id_2,i); ++j){
+      //std::cout <<  j << "\n";
+
+      const unsigned int pid = ps2.neighbor(point_set_id_2, i, j);
+      neighbors.push_back(pid);
+      //m_neighbors[i].push_back(pid);
+      //std::cout << "num_neighbors" + m_neighbors.size() << "\n";
+    }
+    m_boundaryNeighbors.push_back(neighbors);
+  }
 }
 
 void GranularModel::clearNeighbors(){
   m_neighbors.clear();
+  m_boundaryNeighbors.clear();
 }

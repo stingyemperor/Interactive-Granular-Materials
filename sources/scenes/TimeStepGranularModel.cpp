@@ -18,11 +18,14 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
   // TIme intergration
   for(unsigned int i = 0; i < pd.size(); ++i){
     model.getDeltaX(i).setZero();
-    // TimeIntegration::semiImplicitEuler(h, pd.getMass(i), pd.getPosition(i), pd.getVelocity(i), pd.getAcceleration(i));
+    pd.getOldPosition(i) = pd.getPosition(i);
+    TimeIntegration::semiImplicitEuler(h, pd.getMass(i), pd.getPosition(i), pd.getVelocity(i), pd.getAcceleration(i));
   }
 
   // Neighborhood search
-  model.generateNeighbors(nsearch, model.m_pointId1);  
+  model.generateNeighbors(nsearch, model.m_pointId1,model.m_pointId2);  
+  // std::cout << model.m_boundaryNeighbors.size() << "\n"<< model.m_boundaryX.size() << "\n";
+  
   // std::cout << model.m_neighbors.size() << "\n";
   // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0),model.numBoundaryParticles(), &model.getBoundaryX(0));
 
@@ -33,7 +36,9 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
 
 
   // Update velocity
-
+  for(unsigned int i = 0; i < pd.size(); ++i){
+    TimeIntegration::VelocityUpdateFirstOrder(h, pd.getMass(i), pd.getPosition(i), pd.getOldPosition(i), pd.getVelocity(i));
+  }
 
   // compute new time
   //
@@ -57,7 +62,7 @@ void TimeStepGranularModel::clearAccelerations(GranularModel &granularModel){
 void TimeStepGranularModel::reset(){}
 
 void TimeStepGranularModel::constraintProjection(GranularModel &model){
-  const unsigned int maxIter = 5;
+  const unsigned int maxIter = 3;
   unsigned int iter = 0;
 
   ParticleData &pd = model.getParticles();

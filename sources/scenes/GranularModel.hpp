@@ -28,7 +28,8 @@ namespace PBD{
     void cleanupModel();
     void reset();
     void resizeGranularParticles(const unsigned int newSize);
-    void generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch,unsigned int point_set_id);
+    void generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch,unsigned int point_set_id, unsigned int point_set_id_2);
+
     void clearNeighbors();
 
     ParticleData &getParticles();
