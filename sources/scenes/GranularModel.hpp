@@ -18,6 +18,7 @@ namespace PBD{
     // std::vector<Vector3r> m_neighbors;
     std::vector<std::vector<unsigned int>> m_neighbors;
     std::vector<std::vector<unsigned int>> m_boundaryNeighbors;
+    std::vector<unsigned int> m_numConstraints; 
     unsigned int m_pointId1;
     unsigned int m_pointId2;
   
@@ -56,6 +57,13 @@ namespace PBD{
       m_deltaX[i] = val;
     }
 
+    void setNumConstraints(const unsigned int i, unsigned int n){
+      m_numConstraints[i] = n;  
+    }
+
+    unsigned int getNumConstraints(const unsigned int i){
+      return m_numConstraints[i];
+    }
   }; 
 }
 

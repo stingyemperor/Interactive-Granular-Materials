@@ -66,5 +66,16 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
   unsigned int iter = 0;
 
   ParticleData &pd = model.getParticles();
+
+  for(unsigned int i = 0; i < pd.size() ; ++i){
+    model.getDeltaX(i).setZero();
+    model.setNumConstraints(i, 0);
+  }
+  
+  // ----- Boundary collisions-----------------
+  // for each particle check if it is colliding with a boundary particle
+  // if it is colliding, solve constraint and update num constraints for particle
+  
+
   // unsigned int **neighbors = model.getNeighborhoodSearch().g
 }

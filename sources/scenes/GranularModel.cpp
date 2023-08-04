@@ -54,11 +54,13 @@ void GranularModel::initMasses(){
 void GranularModel::resizeGranularParticles(const unsigned int newSize){
   m_particles.resize(newSize);
   m_deltaX.resize(newSize);
+  m_numConstraints.resize(newSize);
 }
 
 void GranularModel::releaseParticles(){
   m_particles.release();
   m_deltaX.clear();
+  m_numConstraints.clear();
 }
 
 void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* granularParticles,
