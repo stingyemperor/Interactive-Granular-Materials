@@ -53,7 +53,7 @@ void TimeStepGranularModel::clearAccelerations(GranularModel &granularModel){
 void TimeStepGranularModel::reset(){}
 
 void TimeStepGranularModel::constraintProjection(GranularModel &model){
-  const unsigned int maxIter = 3;
+  const unsigned int maxIter = 2;
   unsigned int iter = 0;
 
   ParticleData &pd = model.getParticles();
@@ -62,6 +62,58 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
     model.getDeltaX(i).setZero();
     model.setNumConstraints(i, 0);
   }
+
+  while(iter < maxIter){
+    for(unsigned int i = 0; i < pd.size(); ++i){
+
+      // boundary collision handling
+
+      for(unsigned int boundaryIndex : model.m_boundaryNeighbors[i]){
+        Vector3r p1 = model.getParticles().getPosition(i);
+        Vector3r p2 = model.getBoundaryX(boundaryIndex);
+
+        Vector3r p_12 = p1 - p2;
+        Real dist = p_12.norm();
+        Real mag = dist - model.getParticleRadius() * static_cast<Real>(2.0);
+
+        if(mag < static_cast<Real>(0.0)){
+          model.m_deltaX[i] -= (mag/dist) * p_12;
+          model.m_numConstraints[i] += 1; 
+        }
+      }
+      
+      // inter particle collision handling
+      for(unsigned int particleIndex : model.m_neighbors[i]){
+        Vector3r p1 = model.getParticles().getPosition(i);
+        Vector3r p2 = model.getParticles().getPosition(particleIndex);
+
+        Vector3r p_12 = p1 - p2;
+        Real dist = p_12.norm();
+        Real mag = dist - model.getParticleRadius() * static_cast<Real>(2.0);
+
+        if(mag < static_cast<Real>(0.0)){
+          model.m_deltaX[i] -= static_cast<Real>(0.5) * (mag/dist) * p_12;
+          model.m_deltaX[particleIndex] += static_cast<Real>(0.5) * (mag/dist) * p_12;
+          model.m_numConstraints[i] += 1;
+          model.m_numConstraints[particleIndex] += 1;
+        }
+      }
+
+    }
+    
+    for(unsigned int i = 0; i < pd.size(); ++i){
+      if(model.m_numConstraints[i] == 0){
+        model.m_particles.m_x[i] += model.m_deltaX[i]; 
+      }else{
+        model.m_particles.m_x[i] += model.m_deltaX[i]/model.m_numConstraints[i];
+      }
+    }
+
+    iter++;
+  }
+  
+
+  
   
   // ----- Boundary collisions-----------------
   // for each particle check if it is colliding with a boundary particle
