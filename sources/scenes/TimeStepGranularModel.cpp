@@ -24,24 +24,15 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
 
   // Neighborhood search
   model.generateNeighbors(nsearch, model.m_pointId1,model.m_pointId2);  
-  // std::cout << model.m_boundaryNeighbors.size() << "\n"<< model.m_boundaryX.size() << "\n";
-  
-  // std::cout << model.m_neighbors.size() << "\n";
-  // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0),model.numBoundaryParticles(), &model.getBoundaryX(0));
-
-
-  // model.getNeighborhoodSearch()->neighborhoodSearch(&model.getParticles().getPosition(0));
-  // model.getCompactNSearch()->find_neighbors();
   // Constraint Projection
-
+  constraintProjection(model);
+    
 
   // Update velocity
   for(unsigned int i = 0; i < pd.size(); ++i){
     TimeIntegration::VelocityUpdateFirstOrder(h, pd.getMass(i), pd.getPosition(i), pd.getOldPosition(i), pd.getVelocity(i));
   }
 
-  // compute new time
-  //
   // Clear Neighbors
   model.clearNeighbors();
 }
@@ -76,6 +67,5 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
   // for each particle check if it is colliding with a boundary particle
   // if it is colliding, solve constraint and update num constraints for particle
   
-
   // unsigned int **neighbors = model.getNeighborhoodSearch().g
 }

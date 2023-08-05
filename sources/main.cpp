@@ -106,7 +106,6 @@ int main(void)
       DrawBillboard(camera, sphere, pos, 0.05, WHITE);
       // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
     }
-
     // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
     //   Vector3r particle_pos = model.getBoundaryX(i);
     //   Vector3 pos = {particle_pos.x(), particle_pos.y(), particle_pos.z()};
