@@ -10,7 +10,8 @@ namespace PBD {
     ~TimeStepGranularModel(){};
 
     void step(GranularModel &model,CompactNSearch::NeighborhoodSearch &nsearch);
-    void boundaryConstarint(GranularModel &model, const unsigned int p1, const unsigned int p2);
+    void boundaryConstraint(GranularModel &model, const unsigned int x1,  const unsigned int x2);
+    void contactConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2);
     void reset();
     
   };

@@ -31,6 +31,7 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
   // Update velocity
   for(unsigned int i = 0; i < pd.size(); ++i){
     TimeIntegration::VelocityUpdateFirstOrder(h, pd.getMass(i), pd.getPosition(i), pd.getOldPosition(i), pd.getVelocity(i));
+    model.m_particles.m_oldX[i] = model.m_particles.m_x[i];
   }
 
   // Clear Neighbors
@@ -53,54 +54,82 @@ void TimeStepGranularModel::clearAccelerations(GranularModel &granularModel){
 void TimeStepGranularModel::reset(){}
 
 void TimeStepGranularModel::constraintProjection(GranularModel &model){
-  const unsigned int maxIter = 2;
+  const unsigned int maxIter = 4;
+  const unsigned int maxStabalizationIter = 1;
   unsigned int iter = 0;
+  unsigned int stabalizationIter = 0;
 
   ParticleData &pd = model.getParticles();
 
-  for(unsigned int i = 0; i < pd.size() ; ++i){
-    model.getDeltaX(i).setZero();
-    model.setNumConstraints(i, 0);
-  }
+  // for(unsigned int i = 0; i < pd.size() ; ++i){
+  //   model.getDeltaX(i).setZero();
+  //   model.setNumConstraints(i, 0);
+  // }
 
-  while(iter < maxIter){
+  // solve stabalization constraints 
+  while(stabalizationIter < maxStabalizationIter){
+
+    #pragma omp parallel default(shared)
+    {
+      #pragma omp for schedule(static)
+      for(unsigned int i = 0; i < pd.size(); ++i){
+        model.getDeltaX(i).setZero();
+        model.m_numConstraints[i] = 0;
+      }
+    }
+
     for(unsigned int i = 0; i < pd.size(); ++i){
 
       // boundary collision handling
-
       for(unsigned int boundaryIndex : model.m_boundaryNeighbors[i]){
-        Vector3r p1 = model.getParticles().getPosition(i);
-        Vector3r p2 = model.getBoundaryX(boundaryIndex);
-
-        Vector3r p_12 = p1 - p2;
-        Real dist = p_12.norm();
-        Real mag = dist - model.getParticleRadius() * static_cast<Real>(2.0);
-
-        if(mag < static_cast<Real>(0.0)){
-          model.m_deltaX[i] -= (mag/dist) * p_12;
-          model.m_numConstraints[i] += 1; 
-        }
+        boundaryConstraint(model, i, boundaryIndex);
       }
       
       // inter particle collision handling
       for(unsigned int particleIndex : model.m_neighbors[i]){
-        Vector3r p1 = model.getParticles().getPosition(i);
-        Vector3r p2 = model.getParticles().getPosition(particleIndex);
-
-        Vector3r p_12 = p1 - p2;
-        Real dist = p_12.norm();
-        Real mag = dist - model.getParticleRadius() * static_cast<Real>(2.0);
-
-        if(mag < static_cast<Real>(0.0)){
-          model.m_deltaX[i] -= static_cast<Real>(0.5) * (mag/dist) * p_12;
-          model.m_deltaX[particleIndex] += static_cast<Real>(0.5) * (mag/dist) * p_12;
-          model.m_numConstraints[i] += 1;
-          model.m_numConstraints[particleIndex] += 1;
-        }
+        contactConstraint(model, i, particleIndex);
       }
-
     }
     
+    // Update estimated position
+    for(unsigned int i = 0; i < pd.size(); ++i){
+      if(model.m_numConstraints[i] == 0){
+        // vvvvvvvvvv stabalization for collision vvvvvvvvvvvvvvvvvvvvvv
+        model.m_particles.m_oldX[i] += model.m_deltaX[i];
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        model.m_particles.m_x[i] += model.m_deltaX[i]; 
+      }else{
+         // vvvvvvvvvv stabalization for collision vvvvvvvvvvvvvvvvvvvvvv
+        model.m_particles.m_oldX[i] += model.m_deltaX[i]/model.m_numConstraints[i];
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        model.m_particles.m_x[i] += model.m_deltaX[i]/model.m_numConstraints[i];
+      }
+    }
+
+    stabalizationIter++;
+  }
+
+  while(iter < maxIter){
+    for(unsigned int i = 0; i < pd.size(); ++i){
+      model.getDeltaX(i).setZero();
+      model.m_numConstraints[i] = 0;
+    }
+
+    for(unsigned int i = 0; i < pd.size(); ++i){
+
+      // boundary collision handling
+      for(unsigned int boundaryIndex : model.m_boundaryNeighbors[i]){
+        boundaryConstraint(model, i, boundaryIndex);
+      }
+      
+      // inter particle collision handling
+      for(unsigned int particleIndex : model.m_neighbors[i]){
+        contactConstraint(model, i, particleIndex);
+      }
+    }
+    
+    // Update estimated position
     for(unsigned int i = 0; i < pd.size(); ++i){
       if(model.m_numConstraints[i] == 0){
         model.m_particles.m_x[i] += model.m_deltaX[i]; 
@@ -111,13 +140,34 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
 
     iter++;
   }
-  
+}
 
-  
-  
-  // ----- Boundary collisions-----------------
-  // for each particle check if it is colliding with a boundary particle
-  // if it is colliding, solve constraint and update num constraints for particle
-  
-  // unsigned int **neighbors = model.getNeighborhoodSearch().g
+void TimeStepGranularModel::boundaryConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2){
+  Vector3r p1 = model.getParticles().getPosition(x1);
+  Vector3r p2 = model.getBoundaryX(x2);
+
+  Vector3r p_12 = p1 - p2;
+  Real dist = p_12.norm();
+  Real mag = dist - model.getParticleRadius() * static_cast<Real>(2.0);
+
+  if(mag < static_cast<Real>(0.0)){
+    model.m_deltaX[x1] -= (mag/dist) * p_12;
+    model.m_numConstraints[x1] += 1; 
+  }
+}
+
+void TimeStepGranularModel::contactConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2){
+  Vector3r p1 = model.getParticles().getPosition(x1);
+  Vector3r p2 = model.getParticles().getPosition(x2);
+
+  Vector3r p_12 = p1 - p2;
+  Real dist = p_12.norm();
+  Real mag = dist - model.getParticleRadius() * static_cast<Real>(2.0);
+
+  if(mag < static_cast<Real>(0.0)){
+    model.m_deltaX[x1] -= static_cast<Real>(0.5) * (mag/dist) * p_12;
+    model.m_deltaX[x2] += static_cast<Real>(0.5) * (mag/dist) * p_12;
+    model.m_numConstraints[x1] += 1;
+    model.m_numConstraints[x2] += 1;
+  }
 }
