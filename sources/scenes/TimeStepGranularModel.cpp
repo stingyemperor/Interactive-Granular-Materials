@@ -4,6 +4,7 @@
 #include "entities/ParticleData.hpp"
 #include "entities/TimeIntegration.hpp"
 #include "utils/CompactNSearch.h"
+// #include <algorithm>
 
 using namespace PBD;
 
@@ -109,7 +110,8 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
 
     stabalizationIter++;
   }
-
+  
+  // solver iterations
   while(iter < maxIter){
     for(unsigned int i = 0; i < pd.size(); ++i){
       model.getDeltaX(i).setZero();
@@ -126,6 +128,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
       // inter particle collision handling
       for(unsigned int particleIndex : model.m_neighbors[i]){
         contactConstraint(model, i, particleIndex);
+        // contactConstraintFriction(model, i, particleIndex);
       }
     }
     
@@ -171,3 +174,46 @@ void TimeStepGranularModel::contactConstraint(GranularModel &model, const unsign
     model.m_numConstraints[x2] += 1;
   }
 }
+
+void TimeStepGranularModel::contactConstraintFriction(GranularModel &model, const unsigned int x1, const unsigned int x2){
+  Vector3r p1 = model.getParticles().getPosition(x1);
+  Vector3r p2 = model.getParticles().getPosition(x2);
+
+  Vector3r p_12 = p1 - p2;
+  Real dist = p_12.norm();
+  Real diameter = model.getParticleRadius() * static_cast<Real>(2.0);
+  Real mag = dist - diameter;
+
+  if(mag < static_cast<Real>(0.0)){
+    Vector3r delta_p1 = static_cast<Real>(0.5) * (mag/dist) * p_12;
+    Vector3r delta_p2 = static_cast<Real>(0.5) * (mag/dist) * p_12;
+    model.m_deltaX[x1] -= delta_p1;
+    model.m_deltaX[x2] += delta_p2;
+
+    Vector3r delta_p12 = model.m_deltaX[x1] - model.m_deltaX[x2];  
+    Vector3r delta_p12_tang = delta_p12 - (delta_p12.dot(p_12))*p_12/(dist*dist);
+    Real delta_p12_tang_norm = delta_p12_tang.norm(); 
+    Real mu_k = static_cast<Real>(0.35);
+    Real mu_s = static_cast<Real>(0.30);
+    Real fric_tangent = diameter * mu_k/delta_p12_tang_norm;
+    Real min_fric = std::min(fric_tangent,static_cast<Real>(1.0));
+
+    bool check_fric = delta_p12_tang_norm < diameter * mu_s;
+
+    if(check_fric){
+      model.m_deltaX[x1] -= static_cast<Real>(0.5) * delta_p12_tang;
+      model.m_deltaX[x2] += static_cast<Real>(0.5) * delta_p12_tang;
+      model.m_numConstraints[x1] += 1;
+      model.m_numConstraints[x2] += 1;
+    }else{
+      model.m_deltaX[x1] -= static_cast<Real>(0.5) * delta_p12_tang * min_fric;
+      model.m_deltaX[x2] += static_cast<Real>(0.5) * delta_p12_tang * min_fric;
+      model.m_numConstraints[x1] += 1;
+      model.m_numConstraints[x2] += 1;
+    }
+  }
+}
+
+
+
+

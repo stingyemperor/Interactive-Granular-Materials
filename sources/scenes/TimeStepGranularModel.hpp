@@ -12,7 +12,7 @@ namespace PBD {
     void step(GranularModel &model,CompactNSearch::NeighborhoodSearch &nsearch);
     void boundaryConstraint(GranularModel &model, const unsigned int x1,  const unsigned int x2);
     void contactConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2);
+    void contactConstraintFriction(GranularModel &model, const unsigned int x1, const unsigned int x2);
     void reset();
-    
   };
 }
