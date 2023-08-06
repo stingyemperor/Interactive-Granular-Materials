@@ -64,7 +64,9 @@ void GranularModel::releaseParticles(){
 }
 
 void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* granularParticles,
-                              const unsigned int nBoundaryParticles, Vector3r* boundaryParticles){
+                              const unsigned int nBoundaryParticles, Vector3r* boundaryParticles,
+                              const unsigned int nUpsampledParticles, Vector3r* upSampledParticles){
+
 
   releaseParticles();
   resizeGranularParticles(nGranularParticles);

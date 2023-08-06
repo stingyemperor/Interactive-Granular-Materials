@@ -135,7 +135,7 @@ int main(void)
 void createBreakingDam(NeighborhoodSearch &nsearch){
   const Real diam = 2.0*particleRadius;
   const Real startX = -static_cast<Real>(0.5)*containerWidth + diam;
-  const Real startY = diam;
+  const Real startY = diam * 2.0;
   const Real startZ = -static_cast<Real>(0.5)*containerDepth + diam;
   const Real yshift = sqrt(static_cast<Real>(3.0))*particleRadius;
 

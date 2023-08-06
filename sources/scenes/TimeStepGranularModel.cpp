@@ -55,8 +55,8 @@ void TimeStepGranularModel::clearAccelerations(GranularModel &granularModel){
 void TimeStepGranularModel::reset(){}
 
 void TimeStepGranularModel::constraintProjection(GranularModel &model){
-  const unsigned int maxIter = 4;
-  const unsigned int maxStabalizationIter = 1;
+  const unsigned int maxIter = 7;
+  const unsigned int maxStabalizationIter = 2;
   unsigned int iter = 0;
   unsigned int stabalizationIter = 0;
 
