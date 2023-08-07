@@ -3,6 +3,7 @@
 #include "../entities/Simulation.hpp"
 #include "entities/ParticleData.hpp"
 #include "entities/TimeIntegration.hpp"
+#include "utils/Common.hpp"
 #include "utils/CompactNSearch.h"
 // #include <algorithm>
 
@@ -24,7 +25,7 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
   }
 
   // Neighborhood search
-  model.generateNeighbors(nsearch, model.m_pointId1,model.m_pointId2);  
+  model.generateNeighbors(nsearch, model.m_pointId1,model.m_pointId2, model.m_pointId3);  
   // Constraint Projection
   constraintProjection(model);
     
@@ -35,6 +36,8 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
     model.m_particles.m_oldX[i] = model.m_particles.m_x[i];
   }
 
+  // Updated upsampled particles
+  // upsampledParticlesUpdate(model, h);
   // Clear Neighbors
   model.clearNeighbors();
 }
@@ -55,8 +58,8 @@ void TimeStepGranularModel::clearAccelerations(GranularModel &granularModel){
 void TimeStepGranularModel::reset(){}
 
 void TimeStepGranularModel::constraintProjection(GranularModel &model){
-  const unsigned int maxIter = 7;
-  const unsigned int maxStabalizationIter = 2;
+  const unsigned int maxIter = 10;
+  const unsigned int maxStabalizationIter = 3;
   unsigned int iter = 0;
   unsigned int stabalizationIter = 0;
 
@@ -214,6 +217,41 @@ void TimeStepGranularModel::contactConstraintFriction(GranularModel &model, cons
   }
 }
 
+void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const Real h){
+  for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
+    Real w_ij_sum = 0;
+    Vector3r w_ij_v_j_sum(0.0,0.0,0.0); 
+    std::vector<Real> weights;
+    Real w_ij_max = 0; 
+    for(unsigned int particleIndex : model.m_upsampledNeighbors[i]){
+      Real radiusLR = model.m_particleRadius;
+      Vector3r x_ij = model.m_upsampledParticlesX[i] - model.getParticles().getPosition(particleIndex); 
+      Real x_ij_norm_2 = x_ij.norm() * x_ij.norm(); 
+      Real temp = (1  - (x_ij_norm_2/(static_cast<Real>(9.0) * radiusLR * radiusLR))); 
+      Real w_ij = std::max(static_cast<Real>(0.0), temp*temp*temp);
+      weights.push_back(w_ij);
+      if(w_ij_max < w_ij){
+        w_ij_max = w_ij;
+      }
+      w_ij_sum += w_ij;
+      w_ij_v_j_sum += w_ij * model.getParticles().getVelocity(particleIndex);
+    }
+    
+    Vector3r v_i_avg = w_ij_v_j_sum * 1/(w_ij_sum);
+    Real alpha_i = static_cast<Real>(0.0);
+    Real c1 = static_cast<Real>(512.0)/static_cast<Real>(729.0);
+    Real c2 = static_cast<Real>(0.6);
+    bool alphaCheck = (w_ij_max <= c1) || ((w_ij_max/w_ij_sum) >= c2); 
 
+    if(alphaCheck){
+      alpha_i = static_cast<Real>(1.0) - w_ij_max;
+    }
+  
+    Vector3r gravitation = model.getParticles().getAcceleration(0);
+    model.m_upsampledParticlesV[i] = (static_cast<Real>(1.0) - alpha_i) * v_i_avg + 
+      alpha_i * (model.m_upsampledParticlesV[i] + h * gravitation);  
 
+    model.m_upsampledParticlesX[i] = model.m_upsampledParticlesX[i] + h * model.m_upsampledParticlesV[i];
+  }
+}
 

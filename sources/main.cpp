@@ -30,6 +30,7 @@ TimeStepGranularModel simulation;
 NeighborhoodSearch nsearch(0.05f);
 
 const Real particleRadius = static_cast<Real>(0.025);
+const Real particleRadiusUpsampled = 0.4 * particleRadius;
 const unsigned int width = 15;
 const unsigned int depth = 15;
 const unsigned int height = 20;
@@ -53,7 +54,7 @@ int main(void)
   Shader alpha = LoadShader(NULL,"../assets/depth.fs");
   // Define the camera to look into our 3d world
   Camera3D camera = { 0 };
-  camera.position = (Vector3){ 0.0f, 4.0f, 6.0f }; // Camera position
+  camera.position = (Vector3){ 0.0f, 4.0f, 4.0f }; // Camera position
   camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
   camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
   camera.fovy = 45.0f;                                // Camera field-of-view Y
@@ -98,7 +99,7 @@ int main(void)
     BeginMode3D(camera);
     BeginShaderMode(alpha);
   
-    std::cout << GetFPS()  << "\n"; 
+    // std::cout << GetFPS()  << "\n"; 
     simulation.step(model, nsearch);
     for(unsigned int i = 0; i < model.m_particles.size(); ++i){
       Vector3r particle_pos = model.getParticles().getPosition(i); 
@@ -106,6 +107,17 @@ int main(void)
       DrawBillboard(camera, sphere, pos, 0.05, WHITE);
       // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
     }
+    
+    if(IsKeyDown('P')){
+      for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
+      Vector3r particle_pos = model.getUpsampledX(i); 
+      Vector3 pos = {particle_pos.x(),particle_pos.y(),particle_pos.z()}; 
+      DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
+      }
+    }
+    
+
+    // std::cout << model.m_upsampledParticles.size() << "\n";
     // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
     //   Vector3r particle_pos = model.getBoundaryX(i);
     //   Vector3 pos = {particle_pos.x(), particle_pos.y(), particle_pos.z()};
@@ -135,7 +147,7 @@ int main(void)
 void createBreakingDam(NeighborhoodSearch &nsearch){
   const Real diam = 2.0*particleRadius;
   const Real startX = -static_cast<Real>(0.5)*containerWidth + diam;
-  const Real startY = diam * 2.0;
+  const Real startY = diam * 5.0;
   const Real startZ = -static_cast<Real>(0.5)*containerDepth + diam;
   const Real yshift = sqrt(static_cast<Real>(3.0))*particleRadius;
 
@@ -151,13 +163,41 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
   }
    
   model.setParticleRadius(particleRadius);
+  model.setParticleRadiusUpsampled(particleRadiusUpsampled);
+  
 
   // boudary particle stuff
   std::vector<Vector3r> boundaryParticles;
   initBoundaryData(boundaryParticles);
+
+
+  // upsampled particles stuff
+  int width_upsampled = width * 2.0;
+  int height_upsampled = height * 2.0;
+  int depth_upsampled = depth* 2.0;
+  const Real diamUpsampled = 2.0*particleRadiusUpsampled;
+  const Real startXupsampled = -static_cast<Real>(0.5)*containerWidth + diamUpsampled;
+  const Real startYupsampled = diamUpsampled * 2.0;
+  const Real startZupsampled = -static_cast<Real>(0.5)*containerDepth + diamUpsampled;
+
+  std::vector<Vector3r> upsampledParticles;
+  upsampledParticles.resize(width*height*depth);
+
+  for(unsigned int i = 0; i < (int)width; ++i){
+    for(unsigned int j = 0; j < (int)height; ++j){
+      for(unsigned int k = 0; k < (int)depth; ++k){
+        upsampledParticles[i*height*depth + j*depth + k] = diamUpsampled*Vector3r((Real)i, (Real)j, 
+                                                                                  (Real)k) + Vector3r(startXupsampled, 
+                                                                                                      startYupsampled, 
+                                                                                                      startZupsampled);
+      }
+    }
+  }
     
   // init model stuff
-  model.initModel((unsigned int)granularParticles.size(), granularParticles.data(), (unsigned int)boundaryParticles.size(), boundaryParticles.data());
+  model.initModel((unsigned int)granularParticles.size(), granularParticles.data(), 
+                  (unsigned int)boundaryParticles.size(), boundaryParticles.data(),
+                  (unsigned int)upsampledParticles.size(), upsampledParticles.data());
 
   createPointSet(nsearch);
 }
@@ -209,6 +249,7 @@ void initBoundaryData(std::vector<Vector3r> &boundaryParticles){
 void createPointSet(NeighborhoodSearch &nsearch){
   model.m_pointId1 = nsearch.add_point_set(model.m_particles.getPosition(0).data(), model.m_particles.size());
   model.m_pointId2 = nsearch.add_point_set(model.m_boundaryX.front().data(), model.m_boundaryX.size());
+  model.m_pointId3 = nsearch.add_point_set(model.m_upsampledParticlesX.front().data(), model.m_upsampledParticlesX.size());
 }
 
 

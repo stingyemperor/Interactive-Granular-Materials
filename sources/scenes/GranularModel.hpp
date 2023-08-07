@@ -12,11 +12,12 @@ namespace PBD{
     ~GranularModel();
     
     Real m_particleRadius;
-    Real m_upsampledParticleRadius;
+    Real m_ParticleRadiusUpsampled;
     ParticleData m_particles;
     std::vector<Vector3r> m_boundaryX;
     std::vector<Vector3r> m_deltaX;
-    std::vector<Vector3r> m_upsampledParticles;
+    std::vector<Vector3r> m_upsampledParticlesX;
+    std::vector<Vector3r> m_upsampledParticlesV;
     // std::vector<Vector3r> m_neighbors;
     std::vector<std::vector<unsigned int>> m_neighbors;
     std::vector<std::vector<unsigned int>> m_boundaryNeighbors;
@@ -24,6 +25,7 @@ namespace PBD{
     std::vector<unsigned int> m_numConstraints; 
     unsigned int m_pointId1;
     unsigned int m_pointId2;
+    unsigned int m_pointId3;
   
 
     // CompactNSearch::NeighborhoodSearch *m_compactNSearch;
@@ -32,19 +34,20 @@ namespace PBD{
     void cleanupModel();
     void reset();
     void resizeGranularParticles(const unsigned int newSize);
-    void generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch,unsigned int point_set_id, unsigned int point_set_id_2);
+    void generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch,unsigned int point_set_id, unsigned int point_set_id_2, unsigned int point_set_id_3);
 
     void clearNeighbors();
 
     ParticleData &getParticles();
     void initModel(const unsigned int nGranularParticles, Vector3r* granularParticles, 
                    const unsigned int nBoundaryParticles, Vector3r* boundaryParticles,
-                   const unsigned int nUpsampledParticles, Vector3r* upSampledParticles); 
+                   const unsigned int nUpsampledParticles, Vector3r* upsampledParticles); 
   
     const unsigned int numBoundaryParticles() const { return (unsigned int)m_boundaryX.size();} 
     Real getParticleRadius() const {return m_particleRadius;}
     void setParticleRadius(Real val) {m_particleRadius = val;}
-    Real getHRparticleRadius() const {return m_upsampledParticleRadius;}
+    Real getParticleRadiusUpsampled() const {return m_ParticleRadiusUpsampled;}
+    void setParticleRadiusUpsampled(Real val) {m_ParticleRadiusUpsampled = val;}
     // CompactNSearch::NeighborhoodSearch* getCompactNSearch(){return m_compactNSearch;}
     
     Vector3r& getBoundaryX(const unsigned int i){
@@ -64,11 +67,19 @@ namespace PBD{
     }
 
     Vector3r getUpsampledX(const unsigned int i){
-      return m_upsampledParticles[i];
+      return m_upsampledParticlesX[i];
     }
     
     void setUpsampledX(const unsigned int i, const Vector3r &val){
-      m_upsampledParticles[i] = val;
+      m_upsampledParticlesX[i] = val;
+    }
+
+    Vector3r getUpsampledV(const unsigned int i){
+      return m_upsampledParticlesV[i];
+    }
+    
+    void setUpsampledV(const unsigned int i, const Vector3r &val){
+      m_upsampledParticlesV[i] = val;
     }
 
     void setNumConstraints(const unsigned int i, unsigned int n){
