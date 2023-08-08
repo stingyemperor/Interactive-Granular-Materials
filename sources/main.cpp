@@ -83,6 +83,7 @@ int main(void)
   // Main game loop
   while (!WindowShouldClose())        // Detect window close button or ESC key
   {
+
     // Update
     //----------------------------------------------------------------------------------
     UpdateCamera(&camera, CAMERA_FREE);
@@ -117,7 +118,7 @@ int main(void)
     }
     
 
-    // std::cout << model.m_upsampledParticles.size() << "\n";
+    // std::cout << model.m_upsampledParticlesX.size() << "\n";
     // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
     //   Vector3r particle_pos = model.getBoundaryX(i);
     //   Vector3 pos = {particle_pos.x(), particle_pos.y(), particle_pos.z()};
@@ -181,12 +182,12 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
   const Real startZupsampled = -static_cast<Real>(0.5)*containerDepth + diamUpsampled;
 
   std::vector<Vector3r> upsampledParticles;
-  upsampledParticles.resize(width*height*depth);
+  upsampledParticles.resize(width_upsampled*height_upsampled*depth_upsampled);
 
-  for(unsigned int i = 0; i < (int)width; ++i){
-    for(unsigned int j = 0; j < (int)height; ++j){
-      for(unsigned int k = 0; k < (int)depth; ++k){
-        upsampledParticles[i*height*depth + j*depth + k] = diamUpsampled*Vector3r((Real)i, (Real)j, 
+  for(unsigned int i = 0; i < (int)width_upsampled; ++i){
+    for(unsigned int j = 0; j < (int)height_upsampled; ++j){
+      for(unsigned int k = 0; k < (int)depth_upsampled; ++k){
+        upsampledParticles[i*height_upsampled*depth_upsampled + j*depth_upsampled + k] = diamUpsampled*Vector3r((Real)i, (Real)j, 
                                                                                   (Real)k) + Vector3r(startXupsampled, 
                                                                                                       startYupsampled, 
                                                                                                       startZupsampled);

@@ -2,6 +2,7 @@
 
 #include <eigen3/Eigen/Dense>
 #include <float.h>
+#include <iostream>
 
 typedef float Real;
 #define REAL_MAX FLT_MAX
@@ -15,6 +16,8 @@ using Vector2i = Eigen::Matrix<int ,2,1,Eigen::DontAlign>;
 
 
 
-
+// void printVector3(Vector3r &v){
+//   std::cout << "(" << v.x() << "," << v.y() << "," << v.z() << ")\n";
+// }
 
 

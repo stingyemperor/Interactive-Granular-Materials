@@ -18,6 +18,8 @@ void GranularModel::cleanupModel(){
   m_particles.release();
   m_boundaryX.clear();
   m_deltaX.clear();
+  m_upsampledParticlesX.clear();
+  m_upsampledParticlesV.clear();
   // delete m_compactNSearch;
 }
 
