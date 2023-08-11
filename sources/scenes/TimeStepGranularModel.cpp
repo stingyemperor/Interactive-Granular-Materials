@@ -229,7 +229,7 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
   {
       // std::cout << omp_get_thread_num() << "\n";
     // #pragma omp for schedule(static)
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
       Real w_ij_sum = 0;
       Vector3r w_ij_v_j_sum(0.0,0.0,0.0); 
@@ -265,7 +265,6 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
       
       // std::cout << w_ij_max << "\n";
       Vector3r v_i_avg = w_ij_v_j_sum * 1/(w_ij_sum);
-         
       
       Real alpha_i = static_cast<Real>(0.0);
       Real c1 = static_cast<Real>(512.0)/static_cast<Real>(729.0);
@@ -279,15 +278,12 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
      
       // Vector3r gravitation = model.getParticles().getAcceleration(0);
       model.m_upsampledParticlesV[i] = (static_cast<Real>(1.0) - alpha_i) * v_i_avg + alpha_i * (model.m_upsampledParticlesV[i] + h * g);  
-      
-
       // std::cout << model.m_upsampledParticlesV[i].format(CommaInitFmt) << "\n";
       // std::cout << model.m_particles.getVelocity(0).format(CommaInitFmt) << "\n";
       Vector3r test(0.0,0.0,0.0);
       model.m_upsampledParticlesX[i] +=  delta_t * model.m_upsampledParticlesV[i];
-      model.m_upsampledParticlesX[i] += delta_t * test;
+      // model.m_upsampledParticlesX[i] += delta_t * test;
     }
-  
   }
 
       // std::cout << model.m_upsampledParticlesX[0].format(CommaInitFmt) << "\n";
