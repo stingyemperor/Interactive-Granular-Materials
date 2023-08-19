@@ -42,16 +42,25 @@ void GranularModel::reset(){
 
 void GranularModel::initMasses(){
   const int nParticles = (int)m_particles.size();
-  const Real diam = static_cast<Real>(2.0) * m_particleRadius;
-
   #pragma omp parallel default(shared)
   {
     #pragma omp for schedule(static)
     for(int i = 0; i < nParticles; i++){
-      m_particles.setMass(i, 1.0f);
+      m_particles.setMass(i, 1.0);
     }
   }
 }
+
+void GranularModel::initRadius(){
+  const int nParticles = (int)m_particles.size();
+  #pragma omp parallel default(shared)
+  {
+    #pragma omp for schedule(static)
+    for(int i = 0; i < nParticles ;++i){
+      m_particles.setRadius(i, m_particleRadius);
+    }
+  }
+}  
 
 void GranularModel::resizeGranularParticles(const unsigned int newSize){
   m_particles.resize(newSize);
@@ -92,6 +101,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
   }
 
   initMasses();
+  initRadius();
 
   reset();
 }

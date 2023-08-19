@@ -2,11 +2,13 @@
 
 namespace CompactNSearch
 {
-#ifdef USE_DOUBLE
-	using Real = double;
-#else
-	using Real = float;
-#endif
+// #ifdef USE_DOUBLE
+// 	using Real = double;
+// #else
+// 	using Real = float;
+// #endif
+  //using Real = double;
+   using Real = float;
 }
 
 #define INITIAL_NUMBER_OF_INDICES   50

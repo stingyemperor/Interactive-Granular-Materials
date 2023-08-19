@@ -4,9 +4,21 @@
 #include <float.h>
 #include <iostream>
 
+// // typedef float Real;
+// typedef double Real;
+
+// #define REAL_MAX DBL_MAX
+// #define REAL_MIN DBL_MIN
+// #define RealParameter DoubleParameter
+// #define RealParameterType ParameterBase::DOUBLE
+// #define RealVectorParameter DoubleVectorParameter
+// #define RealVectorParameterType ParameterBase::VEC_DOUBLEv
+
 typedef float Real;
 #define REAL_MAX FLT_MAX
 #define REAL_MIN FLT_MIN
+
+
 #define FORCE_INLINE __attribute__((always_inline))
 
 using Vector2r = Eigen::Matrix<Real,2,1,Eigen::DontAlign>;

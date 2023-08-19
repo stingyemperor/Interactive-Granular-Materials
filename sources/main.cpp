@@ -86,7 +86,7 @@ int main(void)
 
     // Update
     //----------------------------------------------------------------------------------
-    UpdateCamera(&camera, CAMERA_FREE);
+    // UpdateCamera(&camera, CAMERA_FREE);
 
     if (IsKeyDown('Z')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     //----------------------------------------------------------------------------------
@@ -104,17 +104,17 @@ int main(void)
     simulation.step(model, nsearch);
     for(unsigned int i = 0; i < model.m_particles.size(); ++i){
       Vector3r particle_pos = model.getParticles().getPosition(i); 
-      Vector3 pos = {particle_pos.x(),particle_pos.y(),particle_pos.z()}; 
+      Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
       DrawBillboard(camera, sphere, pos, 0.05, WHITE);
       // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
     }
     
-    if(IsKeyDown('P')){
+    // if(IsKeyDown('P')){
       for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
       Vector3r particle_pos = model.getUpsampledX(i); 
-      Vector3 pos = {particle_pos.x(),particle_pos.y(),particle_pos.z()}; 
-      DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
-      }
+      Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+      DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), BLACK);
+      // }
     }
     
 

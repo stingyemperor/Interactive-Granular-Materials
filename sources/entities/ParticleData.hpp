@@ -17,6 +17,7 @@ namespace PBD{
     std::vector<Vector3r> m_oldX;
     std::vector<Vector3r> m_v;
     std::vector<Vector3r> m_a;
+    std::vector<Real> m_radius;
 
     ParticleData(void) : m_masses(),m_invMasses(),m_x0(),m_x(),m_v(),m_a(){}
     ~ParticleData(void){
@@ -27,16 +28,18 @@ namespace PBD{
       m_oldX.clear();
       m_v.clear();
       m_a.clear();
+      m_radius.clear();
     }
 
     void addVertex(const Vector3r &vertex){
-      m_masses.push_back(1.0f);
-      m_invMasses.push_back(1.0f);
+      m_masses.push_back(static_cast<Real>(1.0f));
+      m_invMasses.push_back(static_cast<Real>(1.0f));
       m_x0.push_back(vertex);
       m_x.push_back(vertex);
       m_oldX.push_back(vertex);
       m_v.push_back(Vector3r(0.0,0.0,0.0));
       m_a.push_back(Vector3r(0.0,0.0,0.0));
+      m_radius.push_back(static_cast<Real>(1.0));
     }
 
     Real &getMass(const unsigned int i){
@@ -95,6 +98,14 @@ namespace PBD{
       m_v[i] = accel;
     }
 
+    Real &getRadius(const unsigned int i){
+      return m_radius[i];
+    }
+
+    void setRadius(const unsigned int i, const Real radius){
+      m_radius[i] = radius;
+    }
+
     const unsigned int getNumberOfParticles() const{
       return (unsigned int)m_x.size();
     }
@@ -115,6 +126,7 @@ namespace PBD{
       m_oldX.resize(newSize);
       m_v.resize(newSize);
       m_a.resize(newSize);
+      m_radius.resize(newSize);
     }
 
     void release(){
@@ -125,8 +137,58 @@ namespace PBD{
       m_oldX.clear();
       m_v.clear();
       m_a.clear();
+      m_radius.clear();
+    }
+
+    void removeLastElement(){
+      m_masses.pop_back();
+      m_invMasses.pop_back();
+      m_x.pop_back();
+      m_x0.pop_back();
+      m_oldX.pop_back();
+      m_v.pop_back();
+      m_a.pop_back();
+      m_radius.pop_back();
+    }
+
+    void removeElement(const int &index){
+      auto itX = m_x.begin() + index;
+      // auto itX_0 = m_x0.begin() + index;
+      auto itOld_x = m_oldX.begin() + index;
+      auto itMasses = m_masses.begin() + index;
+      auto itInvMasses = m_invMasses.begin() + index;
+      auto itV = m_v.begin() + index;
+      auto itA = m_a.begin() + index;
+      auto itRadius = m_radius.begin() + index;
+      
+      *itX = std::move(m_x.back());
+      // *itX_0 = std::move(m_x0.back());
+      *itOld_x = std::move(m_oldX.back());
+      *itMasses = std::move(m_masses.back());
+      *itInvMasses = std::move(m_invMasses.back());
+      *itV = std::move(m_v.back());
+      *itA = std::move(m_a.back());
+      *itRadius = std::move(m_radius.back());
+
+      m_x.pop_back();
+      m_x0.pop_back();
+      m_oldX.pop_back();
+      m_masses.pop_back();
+      m_invMasses.pop_back();
+      m_v.pop_back();
+      m_a.pop_back();
+      m_radius.pop_back();
+    }
+
+    void addElement(const Vector3r &pos, const Vector3r &vel, const Real &mass, const Real &radius){
+      m_x.push_back(pos); 
+      m_oldX.push_back(pos);
+      m_masses.push_back(mass);
+      m_masses.push_back(static_cast<Real>(1.0)/mass);
+      m_v.push_back(vel);
+      m_a.push_back(Vector3r(0.0,-9.81,0.0)); 
+      m_radius.push_back(radius);
     }
   };
-
 }
 

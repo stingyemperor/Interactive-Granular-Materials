@@ -30,6 +30,7 @@ namespace PBD{
 
     // CompactNSearch::NeighborhoodSearch *m_compactNSearch;
     void initMasses();
+    void initRadius();
     void releaseParticles();
     void cleanupModel();
     void reset();
