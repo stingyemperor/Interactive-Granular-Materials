@@ -27,7 +27,7 @@ void reset();
 
 GranularModel model;
 TimeStepGranularModel simulation;
-NeighborhoodSearch nsearch(0.05f);
+NeighborhoodSearch nsearch(0.051);
 
 const Real particleRadius = static_cast<Real>(0.025);
 const Real particleRadiusUpsampled = 0.4 * particleRadius;
@@ -117,6 +117,7 @@ int main(void)
       // }
     }
     
+    // DrawSphere(Vector3{0,1,0}, 1, GREEN);
 
     // std::cout << model.m_upsampledParticlesX.size() << "\n";
     // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){

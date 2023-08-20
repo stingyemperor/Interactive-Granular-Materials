@@ -35,7 +35,12 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
   // Update velocity
   for(unsigned int i = 0; i < pd.size(); ++i){
     TimeIntegration::VelocityUpdateFirstOrder(h, pd.getMass(i), pd.getPosition(i), pd.getOldPosition(i), pd.getVelocity(i));
-    model.m_particles.m_oldX[i] = model.m_particles.m_x[i];
+
+    // particle sleeping
+    Real difference = (pd.getPosition(i) - pd.getOldPosition(i)).norm();
+    if(difference > static_cast<Real>(0.01)){
+      pd.m_oldX[i] = pd.m_x[i];
+    }
   }
 
   // Updated upsampled particles
@@ -60,8 +65,8 @@ void TimeStepGranularModel::clearAccelerations(GranularModel &granularModel){
 void TimeStepGranularModel::reset(){}
 
 void TimeStepGranularModel::constraintProjection(GranularModel &model){
-  const unsigned int maxIter = 10;
-  const unsigned int maxStabalizationIter = 3;
+  const unsigned int maxIter = 6;
+  const unsigned int maxStabalizationIter = 2;
   unsigned int iter = 0;
   unsigned int stabalizationIter = 0;
 
@@ -148,6 +153,9 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
 
     iter++;
   }
+
+  // Update merge flag for particles
+  
 }
 
 void TimeStepGranularModel::boundaryConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2){
@@ -165,37 +173,49 @@ void TimeStepGranularModel::boundaryConstraint(GranularModel &model, const unsig
 }
 
 void TimeStepGranularModel::contactConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2){
+  ParticleData &pd = model.getParticles();
 
-  Vector3r p1 = model.getParticles().getPosition(x1);
-  Vector3r p2 = model.getParticles().getPosition(x2);
+  Vector3r p1 = pd.getPosition(x1);
+  Vector3r p2 = pd.getPosition(x2);
+
+  // Real massScaled1 = pd.getMass(x1) * exp(-pd.getPosition(x1).y()); 
+  // Real massScaled2 = pd.getMass(x2) * exp(-pd.getPosition(x2).y()); 
+  Real massScaled1 =pd.getMass(x1);
+  Real massScaled2 =pd.getMass(x2);
 
   Vector3r p_12 = p1 - p2;
   Real dist = p_12.norm();
-  Real mag = dist - (model.getParticles().getRadius(x1) + model.getParticles().getRadius(x2));
+  Real mag = dist - (pd.getRadius(x1) + pd.getRadius(x2));
 
   if(mag < static_cast<Real>(0.0)){
-    // model.m_deltaX[x1] -= static_cast<Real>(0.5) * (mag/dist) * p_12;
-    // model.m_deltaX[x2] += static_cast<Real>(0.5) * (mag/dist) * p_12;
-    Real invMassSum = 1/(model.getParticles().getMass(x1) + model.getParticles().getMass(x2));
-    model.m_deltaX[x1] -= model.getParticles().getMass(x1) * invMassSum* (mag/dist) * p_12;
-    model.m_deltaX[x2] += model.getParticles().getMass(x2) * invMassSum * (mag/dist) * p_12;
+    Real invMassSum = 1/(massScaled1 + massScaled2);
+    model.m_deltaX[x1] -= pd.getMass(x1) * invMassSum * (mag/dist) * p_12;
+    model.m_deltaX[x2] += pd.getMass(x2) * invMassSum * (mag/dist) * p_12;
     model.m_numConstraints[x1] += 1;
     model.m_numConstraints[x2] += 1;
   }
 }
 
 void TimeStepGranularModel::contactConstraintFriction(GranularModel &model, const unsigned int x1, const unsigned int x2){
-  Vector3r p1 = model.getParticles().getPosition(x1);
-  Vector3r p2 = model.getParticles().getPosition(x2);
+  
+  ParticleData &pd = model.getParticles();
+  Vector3r p1 = pd.getPosition(x1);
+  Vector3r p2 = pd.getPosition(x2);
+
+  // Real massScaled1 = pd.getMass(x1) * exp(-pd.getPosition(x1).y()); 
+  // Real massScaled2 = pd.getMass(x2) * exp(-pd.getPosition(x2).y()); 
+  Real massScaled1 =pd.getMass(x1);
+  Real massScaled2 =pd.getMass(x2);
 
   Vector3r p_12 = p1 - p2;
   Real dist = p_12.norm();
-  Real diameter = model.getParticleRadius() * static_cast<Real>(2.0);
+  Real diameter = (pd.getRadius(x1) + pd.getRadius(x2));
   Real mag = dist - diameter;
 
   if(mag < static_cast<Real>(0.0)){
-    Vector3r delta_p1 = static_cast<Real>(0.5) * (mag/dist) * p_12;
-    Vector3r delta_p2 = static_cast<Real>(0.5) * (mag/dist) * p_12;
+    Real invMassSum = 1/(massScaled1 + massScaled2);
+    Vector3r delta_p1 = massScaled1 * invMassSum * (mag/dist) * p_12;
+    Vector3r delta_p2 = massScaled2 * invMassSum * (mag/dist) * p_12;
     model.m_deltaX[x1] -= delta_p1;
     model.m_deltaX[x2] += delta_p2;
 
@@ -210,13 +230,13 @@ void TimeStepGranularModel::contactConstraintFriction(GranularModel &model, cons
     bool check_fric = delta_p12_tang_norm < diameter * mu_s;
 
     if(check_fric){
-      model.m_deltaX[x1] -= static_cast<Real>(0.5) * delta_p12_tang;
-      model.m_deltaX[x2] += static_cast<Real>(0.5) * delta_p12_tang;
+      model.m_deltaX[x1] -= massScaled1 * invMassSum * delta_p12_tang;
+      model.m_deltaX[x2] += massScaled2 * invMassSum * delta_p12_tang;
       model.m_numConstraints[x1] += 1;
       model.m_numConstraints[x2] += 1;
     }else{
-      model.m_deltaX[x1] -= static_cast<Real>(0.5) * delta_p12_tang * min_fric;
-      model.m_deltaX[x2] += static_cast<Real>(0.5) * delta_p12_tang * min_fric;
+      model.m_deltaX[x1] -= massScaled1 * invMassSum * delta_p12_tang * min_fric;
+      model.m_deltaX[x2] += massScaled2 * invMassSum * delta_p12_tang * min_fric;
       model.m_numConstraints[x1] += 1;
       model.m_numConstraints[x2] += 1;
     }
@@ -232,8 +252,6 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
 
   #pragma omp parallel 
   {
-      // std::cout << omp_get_thread_num() << "\n";
-    // #pragma omp for schedule(static)
     #pragma omp parallel for
     for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
       Real w_ij_sum = 0;
@@ -243,15 +261,7 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
       unsigned int num_neighbors = 0; 
       
       for(unsigned int j = 0; j < model.m_upsampledNeighbors[i].size(); ++j){
-      // for(unsigned int particleIndex : model.m_upsampledNeighbors[i]){
-        
-        // std::cout << model.m_upsampledNeighbors.size()<< "\n";
-
         unsigned int particleIndex = model.m_upsampledNeighbors[i][j];  
-        // if(num_neighbors > 9){
-        //   break;
-        // }
-        // std::cout << model.m_upsampledNeighbors[i].size() << "\n";
         Vector3r x_ij = model.m_upsampledParticlesX[i] - model.getParticles().getPosition(particleIndex); 
         Real x_ij_norm_2 = x_ij.norm() * x_ij.norm(); 
         Real temp = (static_cast<Real>(1.0)  - (x_ij_norm_2/(static_cast<Real>(9.0) * radiusLR * radiusLR))); 
@@ -265,8 +275,6 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
 
         num_neighbors++;
       }
-      
-      // std::cout << w_ij_max << "\n";
       
       Vector3r v_i_avg;
 
@@ -284,30 +292,12 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
 
       if(alphaCheck){
         alpha_i = static_cast<Real>(1.0) - w_ij_max;
-        // std::cout << alpha_i << "\n";
       }
-
-
-      
-     
       Vector3r gravitation = model.getParticles().getAcceleration(0);
       model.m_upsampledParticlesV[i] = (static_cast<Real>(1.0) - alpha_i) * v_i_avg;  
-      // model.m_upsampledParticlesV[i] = (static_cast<Real>(1.0) - alpha_i) * v_i_avg + alpha_i * (model.m_upsampledParticlesV[i] + h * gravitation);  
-      // std::cout << model.m_upsampledParticlesV[i].format(CommaInitFmt) << "\n";
-      // std::cout << model.m_particles.getVelocity(0).format(CommaInitFmt) << "\n";
       Vector3r test(0.0,0.0,0.0);
       model.m_upsampledParticlesX[i] +=  delta_t * model.m_upsampledParticlesV[i];
-
-      // if(model.m_upsampledParticlesX[i].y() < static_cast<Real>(0.0)){
-        // model.m_upsampledParticlesX[i] = Vector3r(model.m_upsampledParticlesX[i].x(),0.0,model.m_upsampledParticlesX[i].z());
-      // }
-      // model.m_upsampledParticlesX[i] += delta_t * test;
     }
   }
-
-      // std::cout << model.m_upsampledParticlesX[0].format(CommaInitFmt) << "\n";
-      // 
-      // std::cout << model.m_particles.getPosition(0).format(CommaInitFmt) << "\n";
-  
 }
 

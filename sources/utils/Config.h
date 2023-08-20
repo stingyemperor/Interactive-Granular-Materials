@@ -7,8 +7,8 @@ namespace CompactNSearch
 // #else
 // 	using Real = float;
 // #endif
-  //using Real = double;
-   using Real = float;
+  using Real = double;
+   // using Real = float;
 }
 
 #define INITIAL_NUMBER_OF_INDICES   50
