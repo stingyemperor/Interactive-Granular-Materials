@@ -105,7 +105,7 @@ int main(void)
     for(unsigned int i = 0; i < model.m_particles.size(); ++i){
       Vector3r particle_pos = model.getParticles().getPosition(i); 
       Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-      DrawBillboard(camera, sphere, pos, 0.05, WHITE);
+      DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
       // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
     }
     

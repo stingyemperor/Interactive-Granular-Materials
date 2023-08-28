@@ -151,15 +151,26 @@ namespace PBD{
       m_radius.pop_back();
     }
 
-    void removeElement(const int &index){
-      auto itX = m_x.begin() + index;
+    void removeElement(const unsigned int &index, std::unordered_map<unsigned int,unsigned int> &map, const unsigned int &lastIndex){
+
+      unsigned int realIndex;
+      if(map.find(index) == map.end()){
+        realIndex = index;
+      }else{
+        realIndex = map[index];
+      }
+      
+      map[lastIndex] = realIndex;
+      // add to map
+
+      auto itX = m_x.begin() + realIndex;
       // auto itX_0 = m_x0.begin() + index;
-      auto itOld_x = m_oldX.begin() + index;
-      auto itMasses = m_masses.begin() + index;
-      auto itInvMasses = m_invMasses.begin() + index;
-      auto itV = m_v.begin() + index;
-      auto itA = m_a.begin() + index;
-      auto itRadius = m_radius.begin() + index;
+      auto itOld_x = m_oldX.begin() + realIndex;
+      auto itMasses = m_masses.begin() + realIndex;
+      auto itInvMasses = m_invMasses.begin() + realIndex;
+      auto itV = m_v.begin() + realIndex;
+      auto itA = m_a.begin() + realIndex;
+      auto itRadius = m_radius.begin() + realIndex;
       
       *itX = std::move(m_x.back());
       // *itX_0 = std::move(m_x0.back());

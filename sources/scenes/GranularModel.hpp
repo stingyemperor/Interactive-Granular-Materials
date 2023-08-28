@@ -18,7 +18,7 @@ namespace PBD{
     std::vector<Vector3r> m_deltaX;
     std::vector<Vector3r> m_upsampledParticlesX;
     std::vector<Vector3r> m_upsampledParticlesV;
-    std::vector<bool> m_mergeFlag;;
+    std::vector<bool> m_deleteFlag;;
     // std::vector<Vector3r> m_neighbors;
     std::vector<std::vector<unsigned int>> m_neighbors;
     std::vector<std::vector<unsigned int>> m_boundaryNeighbors;
@@ -88,12 +88,12 @@ namespace PBD{
       m_numConstraints[i] = n;  
     }
 
-    bool getMergFlag(const unsigned int i){
-      return m_mergeFlag[i];
+    bool getDeleteFlag(const unsigned int i){
+      return m_deleteFlag[i];
     }
 
-    void setMergeFlag(const unsigned int i, const bool &flag){
-      m_mergeFlag[i] = flag;
+    void setDeleteFlag(const unsigned int i, const bool &flag){
+      m_deleteFlag[i] = flag;
     }
 
     unsigned int getNumConstraints(const unsigned int i){
