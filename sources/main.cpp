@@ -2,12 +2,14 @@
 #include "iostream"
 #include <array>
 #include <memory>
+#include <random>
 #include <vector>
 #include "utils/Common.hpp"
 #include "scenes/GranularModel.hpp"
 #include "scenes/TimeStepGranularModel.hpp"
 #include "entities/Simulation.hpp"
 #include "utils/CompactNSearch.h"
+#include "random"
 
 using namespace PBD;
 using namespace Utilities;
@@ -27,10 +29,10 @@ void reset();
 
 GranularModel model;
 TimeStepGranularModel simulation;
-NeighborhoodSearch nsearch(0.051);
+NeighborhoodSearch nsearch(0.075);
 
 const Real particleRadius = static_cast<Real>(0.025);
-const Real particleRadiusUpsampled = 0.4 * particleRadius;
+const Real particleRadiusUpsampled = 0.5 * particleRadius;
 const unsigned int width = 15;
 const unsigned int depth = 15;
 const unsigned int height = 20;
@@ -86,7 +88,7 @@ int main(void)
 
     // Update
     //----------------------------------------------------------------------------------
-    // UpdateCamera(&camera, CAMERA_FREE);
+    UpdateCamera(&camera, CAMERA_FREE);
 
     if (IsKeyDown('Z')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     //----------------------------------------------------------------------------------
@@ -102,21 +104,25 @@ int main(void)
   
     // std::cout << GetFPS()  << "\n"; 
     simulation.step(model, nsearch);
-    for(unsigned int i = 0; i < model.m_particles.size(); ++i){
+
+    if(IsKeyDown('P')){
+      for(unsigned int i = 0; i < model.m_particles.size(); ++i){
       Vector3r particle_pos = model.getParticles().getPosition(i); 
       Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
       DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
-      // DrawSphereWires(pos, 0.025, 6, 6, WHITE);
+      }
     }
-    
-    // if(IsKeyDown('P')){
-      for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
+   
+    for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
       Vector3r particle_pos = model.getUpsampledX(i); 
       Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-      DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), BLACK);
-      // }
+      DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
     }
-    
+
+
+    if(IsKeyDown('F')){
+      simulation.applyForce(model);
+    }
     // DrawSphere(Vector3{0,1,0}, 1, GREEN);
 
     // std::cout << model.m_upsampledParticlesX.size() << "\n";
@@ -172,30 +178,54 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
   std::vector<Vector3r> boundaryParticles;
   initBoundaryData(boundaryParticles);
 
-
-  // upsampled particles stuff
-  int width_upsampled = width * 2.0;
-  int height_upsampled = height * 2.0;
-  int depth_upsampled = depth* 2.0;
-  const Real diamUpsampled = 2.0*particleRadiusUpsampled;
-  const Real startXupsampled = -static_cast<Real>(0.5)*containerWidth + diamUpsampled;
-  const Real startYupsampled = diamUpsampled * 2.0;
-  const Real startZupsampled = -static_cast<Real>(0.5)*containerDepth + diamUpsampled;
-
+  std::random_device rd; // obtain a random number from hardware
+  std::mt19937 gen(rd()); // seed the generator
   std::vector<Vector3r> upsampledParticles;
-  upsampledParticles.resize(width_upsampled*height_upsampled*depth_upsampled);
 
-  for(unsigned int i = 0; i < (int)width_upsampled; ++i){
-    for(unsigned int j = 0; j < (int)height_upsampled; ++j){
-      for(unsigned int k = 0; k < (int)depth_upsampled; ++k){
-        upsampledParticles[i*height_upsampled*depth_upsampled + j*depth_upsampled + k] = diamUpsampled*Vector3r((Real)i, (Real)j, 
-                                                                                  (Real)k) + Vector3r(startXupsampled, 
-                                                                                                      startYupsampled, 
-                                                                                                      startZupsampled);
-      }
+  for(Vector3r center : granularParticles){
+    Vector3r radius(0.025,0.025,0.025);
+    Vector3r boundsMin = center - radius;
+    Vector3r boundsMax = center + radius;
+    std::uniform_real_distribution<> distrX(boundsMin.x(),boundsMax.x());
+    std::uniform_real_distribution<> distrY(boundsMin.y(),boundsMax.y());
+    std::uniform_real_distribution<> distrZ(boundsMin.z(),boundsMax.z());
+
+    for(int i = 0; i < 8 ; ++i){
+      Vector3r vec(distrX(gen),distrY(gen),distrZ(gen)); 
+      upsampledParticles.push_back(vec);
     }
-  }
     
+  }
+  // upsampled particles stuff
+  // int width_upsampled = width * 2.0;
+  // int height_upsampled = height * 2.0;
+  // int depth_upsampled = depth* 2.0;
+  // const Real diamUpsampled = 2.0*particleRadiusUpsampled;
+  // const Real startXupsampled = -static_cast<Real>(0.5)*containerWidth + diamUpsampled;
+  // const Real startYupsampled = diam * 5.0;
+  // const Real startZupsampled = -static_cast<Real>(0.5)*containerDepth + diamUpsampled;
+
+  // upsampledParticles.resize(width_upsampled*height_upsampled*depth_upsampled);
+
+  // for(unsigned int i = 0; i < (int)width; ++i){
+  //   for(unsigned int j = 0; j < (int)height; ++j){
+  //     for(unsigned int k = 0; k < (int)depth; ++k){
+  //       upsampledParticles[i*height*depth + j*depth + k] = diam*Vector3r((Real)i, (Real)j, (Real)k) + Vector3r(startX, startY, startZ);
+  //     }
+  //   }
+  // }
+
+  // for(unsigned int i = 0; i < (int)width_upsampled; ++i){
+  //   for(unsigned int j = 0; j < (int)height_upsampled; ++j){
+  //     for(unsigned int k = 0; k < (int)depth_upsampled; ++k){
+  //       upsampledParticles[i*height_upsampled*depth_upsampled + j*depth_upsampled + k] = diamUpsampled*Vector3r((Real)i, (Real)j, 
+  //                                                                                 (Real)k) + Vector3r(startXupsampled, 
+  //                                                                                                     startYupsampled, 
+  //                                                                                                     startZupsampled);
+  //     }
+  //   }
+  // }
+  //   
   // init model stuff
   model.initModel((unsigned int)granularParticles.size(), granularParticles.data(), 
                   (unsigned int)boundaryParticles.size(), boundaryParticles.data(),

@@ -21,6 +21,7 @@ void GranularModel::cleanupModel(){
   m_upsampledParticlesX.clear();
   m_upsampledParticlesV.clear();
   m_deleteFlag.clear();
+  m_mergeFlag.clear();
   // delete m_compactNSearch;
 }
 
@@ -37,7 +38,8 @@ void GranularModel::reset(){
     m_particles.getVelocity(i).setZero();
     m_particles.getAcceleration(i).setZero();
     m_deltaX[i].setZero();
-    m_deleteFlag[i] = false; 
+    m_deleteFlag[i] = false;
+    m_mergeFlag[i] = false;
   }
 }
 
@@ -62,13 +64,14 @@ void GranularModel::initRadius(){
       m_particles.setRadius(i, m_particleRadius);
     }
   }
-}  
+}
 
 void GranularModel::resizeGranularParticles(const unsigned int newSize){
   m_particles.resize(newSize);
   m_deltaX.resize(newSize);
   m_numConstraints.resize(newSize);
   m_deleteFlag.resize(newSize);
+  m_mergeFlag.resize(newSize);
 }
 
 void GranularModel::releaseParticles(){
@@ -76,6 +79,7 @@ void GranularModel::releaseParticles(){
   m_deltaX.clear();
   m_numConstraints.clear();
   m_deleteFlag.clear();
+  m_mergeFlag.clear();
 }
 
 void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* granularParticles,
@@ -89,6 +93,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
   for(int i = 0; i < (int)nGranularParticles; ++i){
     m_particles.getPosition0(i) = granularParticles[i];
     m_deleteFlag[i] = false;
+    m_mergeFlag[i] = false;
   }
 
 
@@ -137,12 +142,22 @@ void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearc
       const unsigned int pid = psUpsampled.neighbor(point_set_id_1, i, j);
       neighborUpsampled.push_back(pid);
     }
+    
+    std::vector<unsigned int> neighborBoundaryUpsampled;
+    for(unsigned int j = 0; j < psUpsampled.n_neighbors(point_set_id_2, i); ++j){
+      const unsigned int pid = psUpsampled.neighbor(point_set_id_2, i, j);
+      neighborBoundaryUpsampled.push_back(pid);
+    }
     m_upsampledNeighbors.push_back(neighborUpsampled);
+    m_upsampledBoundaryNeighbors.push_back(neighborBoundaryUpsampled);
   }
 }
 
 void GranularModel::clearNeighbors(){
   m_neighbors.clear();
   m_boundaryNeighbors.clear();
-  m_upsampledNeighbors.clear();
+  m_upsampledNeighbors.clear(); // model.m_upsampledParticlesV[i] = (1.0 - alpha_i) * v_i_avg + alpha_i*(model.m_upsampledParticlesV[i] + delta_t*Vector3r(0.0,-9.81,0.0));
+  m_upsampledBoundaryNeighbors.clear();
+      // model.m_upsampledParticlesX[i] +=  delta_t * model.m_upsampledParticlesV[i];
+      
 }

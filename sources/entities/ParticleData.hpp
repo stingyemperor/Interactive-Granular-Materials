@@ -151,7 +151,7 @@ namespace PBD{
       m_radius.pop_back();
     }
 
-    void removeElement(const unsigned int &index, std::unordered_map<unsigned int,unsigned int> &map, const unsigned int &lastIndex){
+    void removeElement(const unsigned int &index, std::unordered_map<unsigned int,unsigned int> &map, const unsigned int &lastIndex, std::vector<bool> &m_mergeFlag, std::vector<bool> &m_deleteFlag){
 
       unsigned int realIndex;
       if(map.find(index) == map.end()){
@@ -171,7 +171,9 @@ namespace PBD{
       auto itV = m_v.begin() + realIndex;
       auto itA = m_a.begin() + realIndex;
       auto itRadius = m_radius.begin() + realIndex;
-      
+      auto itMerge = m_mergeFlag.begin() + realIndex; 
+      auto itDelete = m_deleteFlag.begin() + realIndex; 
+
       *itX = std::move(m_x.back());
       // *itX_0 = std::move(m_x0.back());
       *itOld_x = std::move(m_oldX.back());
@@ -180,6 +182,8 @@ namespace PBD{
       *itV = std::move(m_v.back());
       *itA = std::move(m_a.back());
       *itRadius = std::move(m_radius.back());
+      *itMerge = std::move(m_mergeFlag.back());
+      *itDelete = std::move(m_deleteFlag.back());
 
       m_x.pop_back();
       m_x0.pop_back();
@@ -189,6 +193,8 @@ namespace PBD{
       m_v.pop_back();
       m_a.pop_back();
       m_radius.pop_back();
+      m_mergeFlag.pop_back();
+      m_deleteFlag.pop_back();
     }
 
     void addElement(const Vector3r &pos, const Vector3r &vel, const Real &mass, const Real &radius){

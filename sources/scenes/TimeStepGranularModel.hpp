@@ -17,5 +17,6 @@ namespace PBD {
     void mergeParticles(GranularModel &model);
     void deleteParticles(GranularModel &model);
     void reset();
+    void applyForce(GranularModel &model);
   };
 }
