@@ -88,7 +88,7 @@ int main(void)
 
     // Update
     //----------------------------------------------------------------------------------
-    UpdateCamera(&camera, CAMERA_FREE);
+    // UpdateCamera(&camera, CAMERA_FREE);
 
     if (IsKeyDown('Z')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     //----------------------------------------------------------------------------------
@@ -103,6 +103,7 @@ int main(void)
     BeginShaderMode(alpha);
   
     // std::cout << GetFPS()  << "\n"; 
+    // std::cout << GetFrameTime() << "\n";
     simulation.step(model, nsearch);
 
     if(IsKeyDown('P')){
@@ -113,11 +114,11 @@ int main(void)
       }
     }
    
-    for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
-      Vector3r particle_pos = model.getUpsampledX(i); 
-      Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-      DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
-    }
+    // for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
+    //   Vector3r particle_pos = model.getUpsampledX(i); 
+    //   Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+    //   DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
+    // }
 
 
     if(IsKeyDown('F')){
@@ -190,7 +191,7 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
     std::uniform_real_distribution<> distrY(boundsMin.y(),boundsMax.y());
     std::uniform_real_distribution<> distrZ(boundsMin.z(),boundsMax.z());
 
-    for(int i = 0; i < 8 ; ++i){
+    for(int i = 0; i < 10 ; ++i){
       Vector3r vec(distrX(gen),distrY(gen),distrZ(gen)); 
       upsampledParticles.push_back(vec);
     }

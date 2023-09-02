@@ -201,7 +201,7 @@ namespace PBD{
       m_x.push_back(pos); 
       m_oldX.push_back(pos);
       m_masses.push_back(mass);
-      m_masses.push_back(static_cast<Real>(1.0)/mass);
+      m_invMasses.push_back(static_cast<Real>(1.0)/mass);
       m_v.push_back(vel);
       m_a.push_back(Vector3r(0.0,-9.81,0.0)); 
       m_radius.push_back(radius);

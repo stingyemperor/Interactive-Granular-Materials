@@ -45,11 +45,11 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
     }
   }
 
-  // mergeParticles(mo3el);
-  // deleteParticles(model);
+  mergeParticles(model);
+  deleteParticles(model);
   // std::cout << pd.getNumberOfParticles() << "\n";
   // Updated upsampled particles
-  upsampledParticlesUpdate(model, h);
+  // upsampledParticlesUpdate(model, h);
   // Clear Neighbors
   model.clearNeighbors();
 }
@@ -122,7 +122,6 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
         model.m_particles.m_x[i] += model.m_deltaX[i]/model.m_numConstraints[i];
       }
     }
-
     stabalizationIter++;
   }
 
@@ -155,14 +154,10 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
         model.m_particles.m_x[i] += model.m_deltaX[i]/model.m_numConstraints[i];
       }
     }
-
     iter++;
   }
-
   // Update merge flag for particles
   // set up particles to be deleted and add the new particles
-
-
 }
 
 void TimeStepGranularModel::boundaryConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2){
@@ -187,8 +182,8 @@ void TimeStepGranularModel::contactConstraint(GranularModel &model, const unsign
 
   // Real massScaled1 = pd.getMass(x1) * exp(-pd.getPosition(x1).y());
   // Real massScaled2 = pd.getMass(x2) * exp(-pd.getPosition(x2).y());
-  Real massScaled1 =pd.getMass(x1);
-  Real massScaled2 =pd.getMass(x2);
+  Real massScaled1 = 1.0 / pd.getMass(x1);
+  Real massScaled2 = 1.0 / pd.getMass(x2);
 
   Vector3r p_12 = p1 - p2;
   Real dist = p_12.norm();
@@ -196,8 +191,8 @@ void TimeStepGranularModel::contactConstraint(GranularModel &model, const unsign
 
   if(mag < static_cast<Real>(0.0)){
     Real invMassSum = 1/(massScaled1 + massScaled2);
-    model.m_deltaX[x1] -= pd.getMass(x1) * invMassSum * (mag/dist) * p_12;
-    model.m_deltaX[x2] += pd.getMass(x2) * invMassSum * (mag/dist) * p_12;
+    model.m_deltaX[x1] -= 1.0/pd.getMass(x1) * invMassSum * (mag/dist) * p_12;
+    model.m_deltaX[x2] += 1.0/pd.getMass(x2) * invMassSum * (mag/dist) * p_12;
     model.m_numConstraints[x1] += 1;
     model.m_numConstraints[x2] += 1;
   }
@@ -338,11 +333,14 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
 
 void TimeStepGranularModel::mergeParticles(GranularModel & model){
 
+  Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
+  std::string sep = "\n-----------------------------------------\n";
   // once a particle gets merged , it should not get merged again
   // keep a seperate list of merged particles
   ParticleData pd = model.getParticles();
-  for(int i = 0; i < pd.size(); ++i){
-    if(pd.getPosition(i).y() < static_cast<Real>(0.05) && !model.getDeleteFlag(i) && !model.getMergeFlag(i)){
+  unsigned int n = pd.size();
+  for(int i = 0; i < n; ++i){
+    if(pd.getPosition(i).y() < static_cast<Real>(0.075) && !model.getDeleteFlag(i) && !model.getMergeFlag(i) && model.m_neighbors[i].size()>= 1){
       Vector3r pos(0.0,0.0,0.0);
       Vector3r vel(0.0,0.0,0.0);
       Real mass = 0;
@@ -358,12 +356,25 @@ void TimeStepGranularModel::mergeParticles(GranularModel & model){
         model.m_deleteFlag[model.m_neighbors[i][j]] = true;
       }
 
-      Real avg = static_cast<Real>(1.0/pd.getNumberOfParticles());
+      Real avg = static_cast<Real>(1.0/model.m_neighbors[i].size());
       pos *= avg;
       // std::cout << pos.x() << "\n";
       vel *= avg;
       radius = std::cbrt(radius);
+
+      if(mass <1.0){
+        mass = 1.0;
+      }
+
+      if(radius < 0.025){
+        radius  = 0.025;
+      }
+
       pd.addElement(pos, vel, mass, radius);
+
+      // std::cout << "mass : "<< mass << "\n";
+      // std::cout << "radius : "<< radius << "\n";
+      std::cout << pos.format(CommaInitFmt) << sep; 
       model.m_neighbors.push_back(std::vector<unsigned int>());
       model.m_mergeFlag.push_back(true);
       model.m_deleteFlag.push_back(false);
