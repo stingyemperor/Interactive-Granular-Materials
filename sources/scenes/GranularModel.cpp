@@ -22,6 +22,7 @@ void GranularModel::cleanupModel(){
   m_upsampledParticlesV.clear();
   m_deleteFlag.clear();
   m_mergeFlag.clear();
+  m_isBoundary.clear();
   // delete m_compactNSearch;
 }
 
@@ -40,6 +41,7 @@ void GranularModel::reset(){
     m_deltaX[i].setZero();
     m_deleteFlag[i] = false;
     m_mergeFlag[i] = false;
+    m_isBoundary[i] = false;
   }
 }
 
@@ -72,6 +74,7 @@ void GranularModel::resizeGranularParticles(const unsigned int newSize){
   m_numConstraints.resize(newSize);
   m_deleteFlag.resize(newSize);
   m_mergeFlag.resize(newSize);
+  m_isBoundary.resize(newSize);
 }
 
 void GranularModel::releaseParticles(){
@@ -80,6 +83,7 @@ void GranularModel::releaseParticles(){
   m_numConstraints.clear();
   m_deleteFlag.clear();
   m_mergeFlag.clear();
+  m_isBoundary.clear();
 }
 
 void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* granularParticles,
@@ -94,6 +98,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
     m_particles.getPosition0(i) = granularParticles[i];
     m_deleteFlag[i] = false;
     m_mergeFlag[i] = false;
+    m_isBoundary[i] = false;
   }
 
 

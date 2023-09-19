@@ -10,7 +10,9 @@
 // #include <algorithm>
 
 using namespace PBD;
-
+Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
+std::string sep = "\n-----------------------------------------\n";
+  
 void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::NeighborhoodSearch &nsearch){
 
   TimeManager *tm = TimeManager::getCurrent();
@@ -44,12 +46,15 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
       pd.m_oldX[i] = pd.m_x[i];
     }
   }
+  
 
-  mergeParticles(model);
-  deleteParticles(model);
+  checkBoundary(model);
+  // mergeParticles(model);
+  // merge2Particles(model);
+  // deleteParticles(model);
   // std::cout << pd.getNumberOfParticles() << "\n";
   // Updated upsampled particles
-  // upsampledParticlesUpdate(model, h);
+  upsampledParticlesUpdate(model, h);
   // Clear Neighbors
   model.clearNeighbors();
 }
@@ -104,6 +109,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
       // inter particle collision handling
       for(unsigned int particleIndex : model.m_neighbors[i]){
         contactConstraint(model, i, particleIndex);
+        // contactConstraintFriction(model, i, particleIndex);
       }
     }
 
@@ -141,8 +147,8 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
 
       // inter particle collision handling
       for(unsigned int particleIndex : model.m_neighbors[i]){
-        contactConstraint(model, i, particleIndex);
-        // contactConstraintFriction(model, i, particleIndex);
+        // contactConstraint(model, i, particleIndex);
+        contactConstraintFriction(model, i, particleIndex);
       }
     }
 
@@ -151,7 +157,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
       if(model.m_numConstraints[i] == 0){
         model.m_particles.m_x[i] += model.m_deltaX[i];
       }else{
-        model.m_particles.m_x[i] += model.m_deltaX[i]/model.m_numConstraints[i];
+        model.m_particles.m_x[i] += model.m_deltaX[i] * 1.5/model.m_numConstraints[i];
       }
     }
     iter++;
@@ -161,8 +167,8 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
 }
 
 void TimeStepGranularModel::boundaryConstraint(GranularModel &model, const unsigned int x1, const unsigned int x2){
-  Vector3r p1 = model.getParticles().getPosition(x1);
-  Vector3r p2 = model.getBoundaryX(x2);
+  Vector3r &p1 = model.getParticles().getPosition(x1);
+  Vector3r &p2 = model.getBoundaryX(x2);
 
   Vector3r p_12 = p1 - p2;
   Real dist = p_12.norm();
@@ -190,9 +196,9 @@ void TimeStepGranularModel::contactConstraint(GranularModel &model, const unsign
   Real mag = dist - (pd.getRadius(x1) + pd.getRadius(x2));
 
   if(mag < static_cast<Real>(0.0)){
-    Real invMassSum = 1/(massScaled1 + massScaled2);
-    model.m_deltaX[x1] -= 1.0/pd.getMass(x1) * invMassSum * (mag/dist) * p_12;
-    model.m_deltaX[x2] += 1.0/pd.getMass(x2) * invMassSum * (mag/dist) * p_12;
+    Real invMassSum = 1.0/(massScaled1 + massScaled2);
+    model.m_deltaX[x1] -= massScaled1 * invMassSum * (mag/dist) * p_12;
+    model.m_deltaX[x2] += massScaled2 * invMassSum * (mag/dist) * p_12;
     model.m_numConstraints[x1] += 1;
     model.m_numConstraints[x2] += 1;
   }
@@ -206,8 +212,8 @@ void TimeStepGranularModel::contactConstraintFriction(GranularModel &model, cons
 
   // Real massScaled1 = pd.getMass(x1) * exp(-pd.getPosition(x1).y());
   // Real massScaled2 = pd.getMass(x2) * exp(-pd.getPosition(x2).y());
-  Real massScaled1 =pd.getMass(x1);
-  Real massScaled2 =pd.getMass(x2);
+  Real massScaled1 = 1.0 / pd.getMass(x1);
+  Real massScaled2 = 1.0 / pd.getMass(x2);
 
   Vector3r p_12 = p1 - p2;
   Real dist = p_12.norm();
@@ -215,13 +221,14 @@ void TimeStepGranularModel::contactConstraintFriction(GranularModel &model, cons
   Real mag = dist - diameter;
 
   if(mag < static_cast<Real>(0.0)){
-    Real invMassSum = 1/(massScaled1 + massScaled2);
+    Real invMassSum = 1.0/(massScaled1 + massScaled2);
     Vector3r delta_p1 = massScaled1 * invMassSum * (mag/dist) * p_12;
     Vector3r delta_p2 = massScaled2 * invMassSum * (mag/dist) * p_12;
     model.m_deltaX[x1] -= delta_p1;
     model.m_deltaX[x2] += delta_p2;
 
-    Vector3r delta_p12 = model.m_deltaX[x1] - model.m_deltaX[x2];
+    // Vector3r delta_p12 = model.m_deltaX[x1] - model.m_deltaX[x2];
+    Vector3r delta_p12 = delta_p1 - delta_p2;
     Vector3r delta_p12_tang = delta_p12 - (delta_p12.dot(p_12))*p_12/(dist*dist);
     Real delta_p12_tang_norm = delta_p12_tang.norm();
     Real mu_k = static_cast<Real>(0.35);
@@ -331,13 +338,77 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
   }
 }
 
+void TimeStepGranularModel::checkBoundary(GranularModel &model){
+  ParticleData &pd = model.getParticles();
+  for(int i = 0; i < pd.size(); ++i){
+    Vector3r com(0.0,0.0,0.0);
+    unsigned int count = 0;
+    for(unsigned int particleIndex : model.m_neighbors[i]){
+      com += pd.getPosition(particleIndex); 
+      count++;
+    }
+
+    com /= count;
+
+    Real dist = (pd.getPosition(i) - com).norm();
+    if(dist > 0.005){
+      model.m_isBoundary[i] = true;
+    }else{
+      model.m_isBoundary[i] = false;
+    }
+    // std::cout << dist << "\n";
+  }
+}
+
+void TimeStepGranularModel::merge2Particles(GranularModel &model){
+  ParticleData &pd = model.getParticles();
+  unsigned int n = pd.size();
+  
+  for(unsigned int i = 0; i < n ; ++i){
+    // if there are no neighbors then skip
+    if(model.m_neighbors[i].size() == 0){
+      continue;
+    }
+    
+    if(pd.getPosition(i).y() < 0.075 && !model.getDeleteFlag(i) && !model.getMergeFlag(i)){
+
+      // get closest neighbor
+      unsigned int closestParticle;
+      Real distance = 10000.0;
+      // model.m_deleteFlag[i] = true;
+
+      for(unsigned int particleIndex : model.m_neighbors[i]){
+        Real dist = (pd.getPosition(i) - pd.getPosition(particleIndex)).norm(); 
+        if( (dist < distance) && (model.m_mergeFlag[particleIndex] != true)){
+          distance  = dist;
+          closestParticle = particleIndex;
+        }
+      }
+
+      // Vector3r newPos = (pd.getPosition(i) + pd.getPosition(closestParticle)) * 0.5;
+      // Vector3r newVel = (pd.getVelocity(i) + pd.getVelocity(closestParticle)) * 0.5;
+      Real newRadius = std::cbrt(pow(pd.getRadius(i),3) + pow(pd.getRadius(closestParticle),3));
+      Real newMass = pd.getMass(i) + pd.getMass(closestParticle);
+      
+      // pd.getPosition(i) = newPos;
+      // pd.getVelocity(i) = newVel;      
+      pd.getMass(i) = newMass;
+      pd.getRadius(i) = newRadius;
+      // pd.addElement(newPos, newVel, newMass, newRadius);
+      // model.m_neighbors.push_back(std::vector<unsigned int>());
+      // model.m_mergeFlag.push_back(true);
+      // model.m_deleteFlag.push_back(false);
+      model.m_mergeFlag[i] = true;
+      model.m_deleteFlag[closestParticle] = true;
+    }
+  }
+}
+
 void TimeStepGranularModel::mergeParticles(GranularModel & model){
 
-  Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
-  std::string sep = "\n-----------------------------------------\n";
   // once a particle gets merged , it should not get merged again
   // keep a seperate list of merged particles
-  ParticleData pd = model.getParticles();
+  ParticleData &pd = model.getParticles();
   unsigned int n = pd.size();
   for(int i = 0; i < n; ++i){
     if(pd.getPosition(i).y() < static_cast<Real>(0.075) && !model.getDeleteFlag(i) && !model.getMergeFlag(i) && model.m_neighbors[i].size()>= 1){
@@ -374,7 +445,7 @@ void TimeStepGranularModel::mergeParticles(GranularModel & model){
 
       // std::cout << "mass : "<< mass << "\n";
       // std::cout << "radius : "<< radius << "\n";
-      std::cout << pos.format(CommaInitFmt) << sep; 
+      // std::cout << pos.format(CommaInitFmt) << sep; 
       model.m_neighbors.push_back(std::vector<unsigned int>());
       model.m_mergeFlag.push_back(true);
       model.m_deleteFlag.push_back(false);

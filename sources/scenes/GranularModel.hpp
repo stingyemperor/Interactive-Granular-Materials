@@ -25,6 +25,7 @@ namespace PBD{
     std::vector<std::vector<unsigned int>> m_boundaryNeighbors;
     std::vector<std::vector<unsigned int>> m_upsampledNeighbors;
     std::vector<std::vector<unsigned int>> m_upsampledBoundaryNeighbors;
+    std::vector<bool> m_isBoundary;
     std::vector<unsigned int> m_numConstraints;
     unsigned int m_pointId1;
     unsigned int m_pointId2;
@@ -104,6 +105,14 @@ namespace PBD{
 
     void setMergeFlag(const unsigned int i, const bool &flag){
       m_mergeFlag[i] = flag;
+    }
+
+    void setIsBoundary(const unsigned int i, const bool &b){
+      m_isBoundary[i] = b; 
+    }
+    
+    bool getIsBoundary(const unsigned int i){
+      return m_isBoundary[i];
     }
 
     unsigned int getNumConstraints(const unsigned int i){

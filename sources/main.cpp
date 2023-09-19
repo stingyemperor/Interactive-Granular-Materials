@@ -48,8 +48,8 @@ int main(void)
 {
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 1920;
-  const int screenHeight = 1080;
+  const int screenWidth = 2560;
+  const int screenHeight = 1440;
   InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
   Texture2D sphere = LoadTexture("../assets/sphere.png");
@@ -108,12 +108,16 @@ int main(void)
 
     if(IsKeyDown('P')){
       for(unsigned int i = 0; i < model.m_particles.size(); ++i){
-      Vector3r particle_pos = model.getParticles().getPosition(i); 
-      Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-      DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+        Vector3r particle_pos = model.getParticles().getPosition(i); 
+        Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+        if(model.m_isBoundary[i] == true){
+          DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
+        }else{
+          DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+        }
       }
     }
-   
+
     // for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
     //   Vector3r particle_pos = model.getUpsampledX(i); 
     //   Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
@@ -129,7 +133,7 @@ int main(void)
     // std::cout << model.m_upsampledParticlesX.size() << "\n";
     // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
     //   Vector3r particle_pos = model.getBoundaryX(i);
-    //   Vector3 pos = {particle_pos.x(), particle_pos.y(), particle_pos.z()};
+    //   Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(), (float)particle_pos.z()};
     //   DrawSphereWires(pos, 0.025, 3, 3, WHITE);
     // }
     // particle_system.draw(camera,sphere);
@@ -184,14 +188,14 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
   std::vector<Vector3r> upsampledParticles;
 
   for(Vector3r center : granularParticles){
-    Vector3r radius(0.025,0.025,0.025);
+    Vector3r radius(0.05,0.05,0.05);
     Vector3r boundsMin = center - radius;
     Vector3r boundsMax = center + radius;
     std::uniform_real_distribution<> distrX(boundsMin.x(),boundsMax.x());
     std::uniform_real_distribution<> distrY(boundsMin.y(),boundsMax.y());
     std::uniform_real_distribution<> distrZ(boundsMin.z(),boundsMax.z());
 
-    for(int i = 0; i < 10 ; ++i){
+    for(int i = 0; i < 10; ++i){
       Vector3r vec(distrX(gen),distrY(gen),distrZ(gen)); 
       upsampledParticles.push_back(vec);
     }
