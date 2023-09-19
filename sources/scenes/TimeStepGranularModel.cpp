@@ -54,7 +54,7 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
   // deleteParticles(model);
   // std::cout << pd.getNumberOfParticles() << "\n";
   // Updated upsampled particles
-  upsampledParticlesUpdate(model, h);
+  // upsampledParticlesUpdate(model, h);
   // Clear Neighbors
   model.clearNeighbors();
 }
@@ -351,7 +351,7 @@ void TimeStepGranularModel::checkBoundary(GranularModel &model){
     com /= count;
 
     Real dist = (pd.getPosition(i) - com).norm();
-    if(dist > 0.005){
+    if(dist > 0.005 || model.m_neighbors[i].size() == 0){
       model.m_isBoundary[i] = true;
     }else{
       model.m_isBoundary[i] = false;
@@ -370,7 +370,7 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model){
       continue;
     }
     
-    if(pd.getPosition(i).y() < 0.075 && !model.getDeleteFlag(i) && !model.getMergeFlag(i)){
+    if(!model.m_isBoundary[i] && !model.getDeleteFlag(i) && !model.getMergeFlag(i)){
 
       // get closest neighbor
       unsigned int closestParticle;
@@ -387,13 +387,14 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model){
 
       // Vector3r newPos = (pd.getPosition(i) + pd.getPosition(closestParticle)) * 0.5;
       // Vector3r newVel = (pd.getVelocity(i) + pd.getVelocity(closestParticle)) * 0.5;
-      Real newRadius = std::cbrt(pow(pd.getRadius(i),3) + pow(pd.getRadius(closestParticle),3));
-      Real newMass = pd.getMass(i) + pd.getMass(closestParticle);
-      
+      Real newRadius = std::cbrt(pow(pd.getRadius(i),3) + pow(pd.getRadius(closestParticle) * 0.10,3));
+      Real newMass = pd.getMass(i) + pd.getMass(closestParticle) * 0.10;
       // pd.getPosition(i) = newPos;
       // pd.getVelocity(i) = newVel;      
       pd.getMass(i) = newMass;
       pd.getRadius(i) = newRadius;
+      // pd.getMass(closestParticle) = pd.getMass(closestParticle) * 0.9;
+      // pd.getRadius(closestParticle)  = std::cbrt(pow(pd.getRadius(closestParticle),3) - pow(pd.getRadius(closestParticle) * 0.1,3));
       // pd.addElement(newPos, newVel, newMass, newRadius);
       // model.m_neighbors.push_back(std::vector<unsigned int>());
       // model.m_mergeFlag.push_back(true);

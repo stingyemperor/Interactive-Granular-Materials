@@ -186,7 +186,6 @@ namespace PBD{
       *itDelete = std::move(m_deleteFlag.back());
 
       m_x.pop_back();
-      m_x0.pop_back();
       m_oldX.pop_back();
       m_masses.pop_back();
       m_invMasses.pop_back();

@@ -106,17 +106,21 @@ int main(void)
     // std::cout << GetFrameTime() << "\n";
     simulation.step(model, nsearch);
 
-    if(IsKeyDown('P')){
+    // if(IsKeyDown('P')){
       for(unsigned int i = 0; i < model.m_particles.size(); ++i){
         Vector3r particle_pos = model.getParticles().getPosition(i); 
         Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+
         if(model.m_isBoundary[i] == true){
-          DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
+          if(IsKeyDown('P')){
+            DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
+          }
         }else{
           DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
         }
+          // DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
       }
-    }
+    // }
 
     // for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
     //   Vector3r particle_pos = model.getUpsampledX(i); 
