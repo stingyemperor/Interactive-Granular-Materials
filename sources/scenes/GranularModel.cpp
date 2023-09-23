@@ -99,6 +99,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
     m_deleteFlag[i] = false;
     m_mergeFlag[i] = false;
     m_isBoundary[i] = false;
+    m_particles.m_isActive[i] = true;
   }
 
 
@@ -123,17 +124,25 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
 
 // neoghbors not including boundary particles
 void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch, unsigned int point_set_id_1, unsigned int point_set_id_2, unsigned int point_set_id_3){
+  // std::cout << "Particles : "<< m_particles.size() << "\n";
   nsearch.find_neighbors();
+  // nsearch.resize_point_set(point_set_id_1,m_particles.getPosition(0).data(), m_particles.size());
+  
   CompactNSearch::PointSet const& ps = nsearch.point_set(point_set_id_1);
+
+
   for(unsigned int i = 0 ; i < ps.n_points() ; ++i){
     std::vector<unsigned int> neighborParticle;
     std::vector<unsigned int> neighborBoundary;
     for(unsigned int j = 0; j < ps.n_neighbors(point_set_id_1,i); ++j){
       const unsigned int pid = ps.neighbor(point_set_id_1, i, j);
-      neighborParticle.push_back(pid);
+      if(m_particles.getIsActive(pid)){
+        neighborParticle.push_back(pid);
+      }
     }
     for(unsigned int k = 0; k < ps.n_neighbors(point_set_id_2, i); ++k){
       const unsigned int pid = ps.neighbor(point_set_id_2, i, k);
+      neighborBoundary.push_back(pid);
       neighborBoundary.push_back(pid);
     }
     m_neighbors.push_back(neighborParticle);
@@ -145,7 +154,9 @@ void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearc
     std::vector<unsigned int> neighborUpsampled;
     for(unsigned int j = 0; j < psUpsampled.n_neighbors(point_set_id_1, i);++j){
       const unsigned int pid = psUpsampled.neighbor(point_set_id_1, i, j);
-      neighborUpsampled.push_back(pid);
+      if(m_particles.getIsActive(pid)){
+        neighborUpsampled.push_back(pid);
+      }
     }
     
     std::vector<unsigned int> neighborBoundaryUpsampled;

@@ -18,6 +18,7 @@ namespace PBD{
     std::vector<Vector3r> m_v;
     std::vector<Vector3r> m_a;
     std::vector<Real> m_radius;
+    std::vector<bool> m_isActive;
 
     ParticleData(void) : m_masses(),m_invMasses(),m_x0(),m_x(),m_v(),m_a(){}
     ~ParticleData(void){
@@ -29,6 +30,7 @@ namespace PBD{
       m_v.clear();
       m_a.clear();
       m_radius.clear();
+      m_isActive.clear();
     }
 
     void addVertex(const Vector3r &vertex){
@@ -117,6 +119,14 @@ namespace PBD{
     unsigned int size() const{
       return (unsigned int)m_x.size();
     }
+    
+    void setIsActive(const unsigned int i , const bool b){
+      m_isActive[i] = b;
+    }
+    
+    bool getIsActive(const unsigned int i){
+      return m_isActive[i]; 
+    }
 
     void resize(const unsigned int newSize){
       m_masses.resize(newSize);
@@ -127,6 +137,7 @@ namespace PBD{
       m_v.resize(newSize);
       m_a.resize(newSize);
       m_radius.resize(newSize);
+      m_isActive.resize(newSize);
     }
 
     void release(){
@@ -138,6 +149,7 @@ namespace PBD{
       m_v.clear();
       m_a.clear();
       m_radius.clear();
+      m_isActive.clear();
     }
 
     void removeLastElement(){
@@ -150,51 +162,69 @@ namespace PBD{
       m_a.pop_back();
       m_radius.pop_back();
     }
+    
+    template <typename T> void quickDelete(unsigned int index, std::vector<T> &v){
+      v[index] = v.back();
+      v.pop_back();
+    }  
 
-    void removeElement(const unsigned int &index, std::unordered_map<unsigned int,unsigned int> &map, const unsigned int &lastIndex, std::vector<bool> &m_mergeFlag, std::vector<bool> &m_deleteFlag){
-
-      unsigned int realIndex;
-      if(map.find(index) == map.end()){
-        realIndex = index;
-      }else{
-        realIndex = map[index];
-      }
-      
-      map[lastIndex] = realIndex;
-      // add to map
-
-      auto itX = m_x.begin() + realIndex;
-      // auto itX_0 = m_x0.begin() + index;
-      auto itOld_x = m_oldX.begin() + realIndex;
-      auto itMasses = m_masses.begin() + realIndex;
-      auto itInvMasses = m_invMasses.begin() + realIndex;
-      auto itV = m_v.begin() + realIndex;
-      auto itA = m_a.begin() + realIndex;
-      auto itRadius = m_radius.begin() + realIndex;
-      auto itMerge = m_mergeFlag.begin() + realIndex; 
-      auto itDelete = m_deleteFlag.begin() + realIndex; 
-
-      *itX = std::move(m_x.back());
-      // *itX_0 = std::move(m_x0.back());
-      *itOld_x = std::move(m_oldX.back());
-      *itMasses = std::move(m_masses.back());
-      *itInvMasses = std::move(m_invMasses.back());
-      *itV = std::move(m_v.back());
-      *itA = std::move(m_a.back());
-      *itRadius = std::move(m_radius.back());
-      *itMerge = std::move(m_mergeFlag.back());
-      *itDelete = std::move(m_deleteFlag.back());
-
-      m_x.pop_back();
-      m_oldX.pop_back();
-      m_masses.pop_back();
-      m_invMasses.pop_back();
-      m_v.pop_back();
-      m_a.pop_back();
-      m_radius.pop_back();
-      m_mergeFlag.pop_back();
-      m_deleteFlag.pop_back();
+    void removeElement(const unsigned int index){
+      quickDelete(index, m_x);
+      quickDelete(index, m_oldX);
+      quickDelete(index, m_v);
+      quickDelete(index, m_a);
+      quickDelete(index, m_masses);
+      quickDelete(index, m_invMasses);
+      quickDelete(index, m_radius);
+      // quickDelete(index, model.m_mergeFlag);
+      // quickDelete(index, model.m_neighbors);
+      // quickDelete(index, model.m_isBoundary);
     }
+
+    // void removeElement(const unsigned int &index, std::unordered_map<unsigned int,unsigned int> &map, const unsigned int &lastIndex, std::vector<bool> &m_mergeFlag, std::vector<bool> &m_deleteFlag){
+
+    //   unsigned int realIndex;
+    //   if(map.find(index) == map.end()){
+    //     realIndex = index;
+    //   }else{
+    //     realIndex = map[index];
+    //   }
+    //   
+    //   map[lastIndex] = realIndex;
+    //   // add to map
+
+    //   auto itX = m_x.begin() + realIndex;
+    //   // auto itX_0 = m_x0.begin() + index;
+    //   auto itOld_x = m_oldX.begin() + realIndex;
+    //   auto itMasses = m_masses.begin() + realIndex;
+    //   auto itInvMasses = m_invMasses.begin() + realIndex;
+    //   auto itV = m_v.begin() + realIndex;
+    //   auto itA = m_a.begin() + realIndex;
+    //   auto itRadius = m_radius.begin() + realIndex;
+    //   auto itMerge = m_mergeFlag.begin() + realIndex; 
+    //   auto itDelete = m_deleteFlag.begin() + realIndex; 
+
+    //   *itX = std::move(m_x.back());
+    //   // *itX_0 = std::move(m_x0.back());
+    //   *itOld_x = std::move(m_oldX.back());
+    //   *itMasses = std::move(m_masses.back());
+    //   *itInvMasses = std::move(m_invMasses.back());
+    //   *itV = std::move(m_v.back());
+    //   *itA = std::move(m_a.back());
+    //   *itRadius = std::move(m_radius.back());
+    //   *itMerge = std::move(m_mergeFlag.back());
+    //   *itDelete = std::move(m_deleteFlag.back());
+
+    //   m_x.pop_back();
+    //   m_oldX.pop_back();
+    //   m_masses.pop_back();
+    //   m_invMasses.pop_back();
+    //   m_v.pop_back();
+    //   m_a.pop_back();
+    //   m_radius.pop_back();
+    //   m_mergeFlag.pop_back();
+    //   m_deleteFlag.pop_back();
+    // }
 
     void addElement(const Vector3r &pos, const Vector3r &vel, const Real &mass, const Real &radius){
       m_x.push_back(pos); 

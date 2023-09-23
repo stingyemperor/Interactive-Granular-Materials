@@ -102,37 +102,38 @@ int main(void)
     BeginMode3D(camera);
     BeginShaderMode(alpha);
   
-    // std::cout << GetFPS()  << "\n"; 
+    std::cout << GetFPS()  << "\n"; 
     // std::cout << GetFrameTime() << "\n";
     simulation.step(model, nsearch);
 
     // if(IsKeyDown('P')){
-      for(unsigned int i = 0; i < model.m_particles.size(); ++i){
-        Vector3r particle_pos = model.getParticles().getPosition(i); 
-        Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-
-        if(model.m_isBoundary[i] == true){
-          if(IsKeyDown('P')){
-            DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
-          }
-        }else{
-          DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
-        }
-          // DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
-      }
+      // for(unsigned int i = 0; i < model.m_particles.size(); ++i){
+      //   if(model.m_particles.getIsActive(i)){
+      //   Vector3r particle_pos = model.getParticles().getPosition(i); 
+      //   Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+      //   // if(model.m_isBoundary[i] == true){
+      //   //   if(IsKeyDown('P')){
+      //   //     DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
+      //   //   }
+      //   // }else{
+      //   //   DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+      //   // }
+      //     DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+      //   }
+      // }
     // }
 
-    // for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
-    //   Vector3r particle_pos = model.getUpsampledX(i); 
-    //   Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-    //   DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
-    // }
+    for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
+      Vector3r particle_pos = model.getUpsampledX(i); 
+      Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+      DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
+    }
 
-
+    // std::cout << model.getParticles().size() << "\n";
     if(IsKeyDown('F')){
       simulation.applyForce(model);
     }
-    // DrawSphere(Vector3{0,1,0}, 1, GREEN);
+    // DrawSphere(Vector3{0,0,0}, 1, GREEN);
 
     // std::cout << model.m_upsampledParticlesX.size() << "\n";
     // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
