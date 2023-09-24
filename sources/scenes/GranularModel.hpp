@@ -20,16 +20,27 @@ namespace PBD{
     std::vector<Vector3r> m_upsampledParticlesV;
     std::vector<bool> m_deleteFlag;
     std::vector<bool> m_mergeFlag;
+    std::vector<unsigned int> m_bigger;
+    std::vector<unsigned int> m_smaller;
+    std::vector<short int> m_mergeCount;
+    std::vector<unsigned int> m_inactive;
+    std::vector<bool> m_isActiveUpsampled;
+    std::vector<unsigned int> m_inactiveUpsampled;
     // std::vector<Vector3r> m_neighbors;
     std::vector<std::vector<unsigned int>> m_neighbors;
     std::vector<std::vector<unsigned int>> m_boundaryNeighbors;
     std::vector<std::vector<unsigned int>> m_upsampledNeighbors;
     std::vector<std::vector<unsigned int>> m_upsampledBoundaryNeighbors;
+    std::vector<std::vector<unsigned int>> m_neighborsUpsampled;
+
     std::vector<bool> m_isBoundary;
     std::vector<unsigned int> m_numConstraints;
     unsigned int m_pointId1;
     unsigned int m_pointId2;
     unsigned int m_pointId3;
+    Real maxRadius;
+    Real maxMass;
+    Real minMass;
 
 
     // CompactNSearch::NeighborhoodSearch *m_compactNSearch;
