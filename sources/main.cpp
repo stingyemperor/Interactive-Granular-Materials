@@ -108,29 +108,29 @@ int main(void)
     // std::cout << model.m_bigger.size() << "\n";
 
     // if(IsKeyDown('P')){
-      // for(unsigned int i = 0; i < model.m_particles.size(); ++i){
-      //   if(model.m_particles.getIsActive(i)){
-      //   Vector3r particle_pos = model.getParticles().getPosition(i); 
-      //   Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-      //   // if(model.m_isBoundary[i] == true){
-      //   //   DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
-      //   // }else{
-      //   //   DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
-      //   // }
-      //     DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
-      //   }
-      // }
+      for(unsigned int i = 0; i < model.m_particles.size(); ++i){
+        if(model.m_particles.getIsActive(i)){
+        Vector3r particle_pos = model.getParticles().getPosition(i); 
+        Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+        if(model.m_isBoundary[i] == true){
+          DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
+        }else{
+          DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+        }
+          // DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+        }
+      }
     // }
 
-    for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
-      if(model.m_isActiveUpsampled[i]){
-        Vector3r particle_pos = model.getUpsampledX(i); 
-        Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
-        DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
-      }
-    }
+    // for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
+    //   if(model.m_isActiveUpsampled[i]){
+    //     Vector3r particle_pos = model.getUpsampledX(i); 
+    //     Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+    //     DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
+    //   }
+    // }
     // std::cout << model.m_particles.size() << "\n";
-    std::cout << model.m_inactiveUpsampled.size() << "\n";
+    // std::cout << model.m_inactiveUpsampled.size() << "\n";
     if(IsKeyDown('F')){
       simulation.applyForce(model);
     }
