@@ -5,20 +5,24 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #set(CMAKE_BUILD_TYPE Debug)
-#set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Release)
 include(FetchContent)
 
+set(EIGEN_ROOT_DIR "/usr/local/include/eigen/3.4.0_1/include/eigen3/")
+set(ONEDPL_ROOT_DIR "/usr/local/include/onedpl/2022.0.0/include/")
 
-if (UNIX)
-find_package(OpenMP)
-if (OPENMP_FOUND)
-	if (CMAKE_VERSION VERSION_GREATER "3.8")
-		link_libraries(OpenMP::OpenMP_CXX)
-	else()
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-	endif()
-endif(OPENMP_FOUND)
-endif (UNIX)
+
+
+# if (UNIX)
+# find_package(OpenMP)
+# if (OPENMP_FOUND)
+# 	if (CMAKE_VERSION VERSION_GREATER "3.8")
+# 		link_libraries(OpenMP::OpenMP_CXX)
+# 	else()
+# 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+# 	endif()
+# endif(OPENMP_FOUND)
+# endif (UNIX)
 ##########################################################################################
 # Add dependencies with FetchContent
 ##########################################################################################
@@ -34,6 +38,10 @@ function(add_git_dependency libName gitURL gitTag)
     target_compile_options(${libName} PRIVATE "-w")
 endfunction()
 
+include_directories(
+    ${EIGEN_ROOT_DIR}
+    # ${ONEDPL_ROOT_DIR}
+)
 
 #add glm
 find_package(glm REQUIRED)
@@ -50,7 +58,6 @@ add_git_dependency(
     https://github.com/raysan5/raylib.git
     4.5.0
 )
-
 
 
 ##########################################################################################
@@ -108,4 +115,25 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SAFESEH:NO")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
+endif()
+
+###openmP######################
+
+set(OpenMP_C "${CMAKE_C_COMPILER}")
+set(OpenMP_C_FLAGS "-Xclang -fopenmp -I/usr/local/Cellar/libomp/14.0.0/include")
+set(OpenMP_C_LIB_NAMES "libomp")
+set(OpenMP_libomp_LIBRARY "omp")
+
+set(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
+set(OpenMP_CXX_FLAGS "-Xclang -fopenmp -I/usr/local/Cellar/libomp/14.0.0/include")
+set(OpenMP_CXX_LIB_NAMES "libomp")
+set(OpenMP_libomp_LIBRARY "omp")
+
+link_directories("/usr/local/Cellar/libomp/14.0.0/lib/")
+target_link_directories(${PROJECT_NAME} PRIVATE "/usr/local/Cellar/libomp/14.0.0/lib/")
+
+
+if (APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	find_package(oneDPL REQUIRED)
+	target_link_libraries(${PROJECT_NAME} PUBLIC oneDPL)
 endif()

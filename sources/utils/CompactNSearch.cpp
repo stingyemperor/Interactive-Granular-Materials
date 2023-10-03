@@ -7,7 +7,9 @@
 #include <array>
 #include <cstdint>
 #include <limits>
+#include <chrono>
 #include <algorithm>
+#include <execution>
 
 
 namespace CompactNSearch
@@ -238,12 +240,14 @@ NeighborhoodSearch::update_point_sets()
 	concurrency::parallel_for_each(
 #elif defined(__APPLE__) && defined(__clang__)
 	std::for_each(oneapi::dpl::execution::par,
+	//__gnu_parallel::for_each(
+	//std::for_each(std::execution::par,
 #else
 	__gnu_parallel::for_each(
 #endif
 	m_point_sets.begin(), m_point_sets.end(), [&](PointSet& d)
 	{
-		if (d.is_dynamic()) 
+		if (d.is_dynamic())
 		{
 			d.m_keys.swap(d.m_old_keys);
 			for (unsigned int i = 0; i < d.n_points(); ++i)
@@ -319,6 +323,8 @@ NeighborhoodSearch::erase_empty_entries(std::vector<unsigned int> const& to_dele
 	concurrency::parallel_for_each(
 #elif defined(__APPLE__) && defined(__clang__)
 	std::for_each(oneapi::dpl::execution::par,
+	//__gnu_parallel::for_each(
+		//std::for_each( std::execution::par,
 #else
 	__gnu_parallel::for_each(
 #endif
@@ -419,6 +425,8 @@ NeighborhoodSearch::query()
 	concurrency::parallel_for_each(
 #elif defined(__APPLE__) && defined(__clang__)
 	std::for_each(oneapi::dpl::execution::par,
+	//__gnu_parallel::for_each(
+		//std::for_each(std::execution::par,
 #else
 	__gnu_parallel::for_each(
 #endif
@@ -481,6 +489,8 @@ NeighborhoodSearch::query()
 	concurrency::parallel_for_each(
 #elif defined(__APPLE__) && defined(__clang__)
 	std::for_each(oneapi::dpl::execution::par,
+	//__gnu_parallel::for_each(
+		//std::for_each( std::execution::par,
 #else
 	__gnu_parallel::for_each(
 #endif

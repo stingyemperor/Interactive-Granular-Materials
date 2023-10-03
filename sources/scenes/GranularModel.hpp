@@ -3,6 +3,7 @@
 #include "../utils/CompactNSearch.h"
 #include "../entities/ParticleData.hpp"
 #include "../entities/NeighborhoodSearchSpatialHashing.h"
+#include "random"
 
 namespace PBD{
 
@@ -14,6 +15,10 @@ namespace PBD{
     Real m_particleRadius;
     Real m_ParticleRadiusUpsampled;
     ParticleData m_particles;
+    Vector3r samplingRadius;
+    std::random_device rd;
+    std::mt19937 gen;
+
     std::vector<Vector3r> m_boundaryX;
     std::vector<Vector3r> m_deltaX;
     std::vector<Vector3r> m_upsampledParticlesX;
@@ -119,9 +124,9 @@ namespace PBD{
     }
 
     void setIsBoundary(const unsigned int i, const bool &b){
-      m_isBoundary[i] = b; 
+      m_isBoundary[i] = b;
     }
-    
+
     bool getIsBoundary(const unsigned int i){
       return m_isBoundary[i];
     }

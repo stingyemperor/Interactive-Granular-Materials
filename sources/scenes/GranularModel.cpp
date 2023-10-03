@@ -9,8 +9,10 @@ using namespace PBD;
 GranularModel::GranularModel() : m_particles(){
   m_particleRadius = static_cast<Real>(0.025);
   // maxRadius = std::cbrt(3 * pow(0.025,3));
-  maxMass = 2; 
+  maxMass = 2;
   minMass = 1;
+  samplingRadius = Vector3r(0.05,0.05,0.05);
+  std::mt19937 gen(rd());
 }
 
 GranularModel::~GranularModel(void){
@@ -138,7 +140,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
   }
 
   // m_neighbors.reserve(nGranularParticles);
-  // m_boundaryNeighbors.reserve(nGranularParticles); 
+  // m_boundaryNeighbors.reserve(nGranularParticles);
   // m_neighborsUpsampled.reserve(nGranularParticles);
   // m_upsampledNeighbors.reserve(nUpsampledParticles);
   // m_upsampledBoundaryNeighbors.reserve(nUpsampledParticles);
@@ -154,7 +156,7 @@ void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearc
   // std::cout << "Particles : "<< m_particles.size() << "\n";
   nsearch.find_neighbors();
   // nsearch.resize_point_set(point_set_id_1,m_particles.getPosition(0).data(), m_particles.size());
-  
+
   CompactNSearch::PointSet const& ps = nsearch.point_set(point_set_id_1);
 
   for(unsigned int i = 0 ; i < ps.n_points() ; ++i){
@@ -191,7 +193,7 @@ void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearc
         neighborUpsampled.push_back(pid);
       }
     }
-    
+
     std::vector<unsigned int> neighborBoundaryUpsampled;
     for(unsigned int j = 0; j < psUpsampled.n_neighbors(point_set_id_2, i); ++j){
       const unsigned int pid = psUpsampled.neighbor(point_set_id_2, i, j);
@@ -210,5 +212,5 @@ void GranularModel::clearNeighbors(){
   m_upsampledBoundaryNeighbors.clear();
 
       // model.m_upsampledParticlesX[i] +=  delta_t * model.m_upsampledParticlesV[i];
-      
+
 }

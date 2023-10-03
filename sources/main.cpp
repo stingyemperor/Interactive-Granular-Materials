@@ -48,8 +48,8 @@ int main(void)
 {
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 2560;
-  const int screenHeight = 1440;
+  const int screenWidth = 1280;
+  const int screenHeight = 720;
   InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
   Texture2D sphere = LoadTexture("../assets/sphere.png");
@@ -80,7 +80,7 @@ int main(void)
   // CompactNSearch::NeighborhoodSearch nsearch(0.5f);
   // Plane plane;
 
-  createBreakingDam(nsearch); 
+  createBreakingDam(nsearch);
   // ------------ Particle Stuff --------------------------------------
   // Main game loop
   while (!WindowShouldClose())        // Detect window close button or ESC key
@@ -101,8 +101,8 @@ int main(void)
 
     BeginMode3D(camera);
     BeginShaderMode(alpha);
-  
-    // std::cout << GetFPS()  << "\n"; 
+
+    //std::cout << GetFPS()  << "\n";
     // std::cout << GetFrameTime() << "\n";
     simulation.step(model, nsearch);
     // std::cout << model.m_bigger.size() << "\n";
@@ -110,22 +110,22 @@ int main(void)
     // if(IsKeyDown('P')){
       for(unsigned int i = 0; i < model.m_particles.size(); ++i){
         if(model.m_particles.getIsActive(i)){
-        Vector3r particle_pos = model.getParticles().getPosition(i); 
-        Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+        Vector3r particle_pos = model.getParticles().getPosition(i);
+        Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()};
         if(model.m_isBoundary[i] == true){
           DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
         }else{
           DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
         }
-          // DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+          //DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
         }
       }
     // }
 
     // for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
     //   if(model.m_isActiveUpsampled[i]){
-    //     Vector3r particle_pos = model.getUpsampledX(i); 
-    //     Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()}; 
+    //     Vector3r particle_pos = model.getUpsampledX(i);
+    //     Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()};
     //     DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
     //   }
     // }
@@ -180,10 +180,10 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
       }
     }
   }
-   
+
   model.setParticleRadius(particleRadius);
   model.setParticleRadiusUpsampled(particleRadiusUpsampled);
-  
+
 
   // boudary particle stuff
   std::vector<Vector3r> boundaryParticles;
@@ -192,9 +192,9 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
   std::random_device rd; // obtain a random number from hardware
   std::mt19937 gen(rd()); // seed the generator
   std::vector<Vector3r> upsampledParticles;
+  Vector3r radius(0.05,0.05,0.05);
 
   for(Vector3r center : granularParticles){
-    Vector3r radius(0.05,0.05,0.05);
     Vector3r boundsMin = center - radius;
     Vector3r boundsMax = center + radius;
     std::uniform_real_distribution<> distrX(boundsMin.x(),boundsMax.x());
@@ -202,10 +202,10 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
     std::uniform_real_distribution<> distrZ(boundsMin.z(),boundsMax.z());
 
     for(int i = 0; i < 10; ++i){
-      Vector3r vec(distrX(gen),distrY(gen),distrZ(gen)); 
+      Vector3r vec(distrX(gen),distrY(gen),distrZ(gen));
       upsampledParticles.push_back(vec);
     }
-    
+
   }
   // upsampled particles stuff
   // int width_upsampled = width * 2.0;
@@ -229,16 +229,16 @@ void createBreakingDam(NeighborhoodSearch &nsearch){
   // for(unsigned int i = 0; i < (int)width_upsampled; ++i){
   //   for(unsigned int j = 0; j < (int)height_upsampled; ++j){
   //     for(unsigned int k = 0; k < (int)depth_upsampled; ++k){
-  //       upsampledParticles[i*height_upsampled*depth_upsampled + j*depth_upsampled + k] = diamUpsampled*Vector3r((Real)i, (Real)j, 
-  //                                                                                 (Real)k) + Vector3r(startXupsampled, 
-  //                                                                                                     startYupsampled, 
+  //       upsampledParticles[i*height_upsampled*depth_upsampled + j*depth_upsampled + k] = diamUpsampled*Vector3r((Real)i, (Real)j,
+  //                                                                                 (Real)k) + Vector3r(startXupsampled,
+  //                                                                                                     startYupsampled,
   //                                                                                                     startZupsampled);
   //     }
   //   }
   // }
-  //   
+  //
   // init model stuff
-  model.initModel((unsigned int)granularParticles.size(), granularParticles.data(), 
+  model.initModel((unsigned int)granularParticles.size(), granularParticles.data(),
                   (unsigned int)boundaryParticles.size(), boundaryParticles.data(),
                   (unsigned int)upsampledParticles.size(), upsampledParticles.data());
 
@@ -251,14 +251,14 @@ void addWall(const Vector3r &minX, const Vector3r &maxX, std::vector<Vector3r> &
   const unsigned int stepsX = (unsigned int)(diff[0] / particleDistance) + 1u;
   const unsigned int stepsY = (unsigned int)(diff[1] / particleDistance) + 1u;
   const unsigned int stepsZ = (unsigned int)(diff[2] / particleDistance) + 1u;
-  
+
   const unsigned int startIndex = (unsigned int)boundaryParticles.size();
   boundaryParticles.resize(startIndex + stepsX * stepsY * stepsZ);
 
   for(int x = 0; x < (int)stepsX; ++x){
     for(int y = 0; y < (int)stepsY; ++y){
       for(int z = 0; z < (int)stepsZ; ++z){
-        const Vector3r currPos = minX + Vector3r(x*particleDistance, y*particleDistance, z*particleDistance);    
+        const Vector3r currPos = minX + Vector3r(x*particleDistance, y*particleDistance, z*particleDistance);
         boundaryParticles[startIndex + x*stepsY*stepsZ + y*stepsZ + z] = currPos;
       }
     }

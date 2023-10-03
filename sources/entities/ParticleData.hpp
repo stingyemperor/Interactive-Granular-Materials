@@ -1,7 +1,13 @@
 #pragma once
-#include <eigen3/Eigen/Core>
+#if defined(__linux__)
+    #include <eigen3/Eigen/Core>
+#elif defined(__APPLE__)
+    #include <Eigen/Core>
+#endif
+
+//#include <eigen3/Eigen/Core>
 #include "./utils/Common.hpp"
-#include <glm/glm.hpp>
+//#include <glm/glm.hpp>
 #include <vector>
 #define max_count 1000
 
@@ -79,9 +85,9 @@ namespace PBD{
     void setPosition0(const unsigned int i, const Vector3r &pos){
       m_x0[i] = pos;
     }
-    
+
     void setOldPosition(const unsigned int i, const Vector3r &pos){
-      m_oldX[i] = pos;   
+      m_oldX[i] = pos;
     }
 
     Vector3r &getVelocity(const unsigned int i){
@@ -119,13 +125,13 @@ namespace PBD{
     unsigned int size() const{
       return (unsigned int)m_x.size();
     }
-    
+
     void setIsActive(const unsigned int i , const bool b){
       m_isActive[i] = b;
     }
-    
+
     bool getIsActive(const unsigned int i){
-      return m_isActive[i]; 
+      return m_isActive[i];
     }
 
     void resize(const unsigned int newSize){
@@ -162,11 +168,11 @@ namespace PBD{
       m_a.pop_back();
       m_radius.pop_back();
     }
-    
+
     template <typename T> void quickDelete(unsigned int index, std::vector<T> &v){
       v[index] = v.back();
       v.pop_back();
-    }  
+    }
 
     void removeElement(const unsigned int index){
       quickDelete(index, m_x);
@@ -182,12 +188,12 @@ namespace PBD{
     }
 
     void addElement(const Vector3r &pos, const Vector3r &vel, const Real &mass, const Real &radius){
-      m_x.push_back(pos); 
+      m_x.push_back(pos);
       m_oldX.push_back(pos);
       m_masses.push_back(mass);
       m_invMasses.push_back(static_cast<Real>(1.0)/mass);
       m_v.push_back(vel);
-      m_a.push_back(Vector3r(0.0,-9.81,0.0)); 
+      m_a.push_back(Vector3r(0.0,-9.81,0.0));
       m_radius.push_back(radius);
     }
   };

@@ -6,13 +6,14 @@
 #include "utils/Common.hpp"
 #include "utils/CompactNSearch.h"
 #include <cmath>
-#include <omp.h>
+//#include <omp.h>
 #include <algorithm>
+#include "random"
 
 using namespace PBD;
 Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
 std::string sep = "\n-----------------------------------------\n";
-  
+
 void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::NeighborhoodSearch &nsearch){
 
   TimeManager *tm = TimeManager::getCurrent();
@@ -21,7 +22,7 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
 
   clearAccelerations(model);
 
-  // TIme intergration
+  // Time intergration
   for(unsigned int i = 0; i < pd.size(); ++i){
     if(pd.getIsActive(i)){
       model.getDeltaX(i).setZero();
@@ -50,15 +51,14 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
       }
     }
   }
-  
+
 
   checkBoundary(model);
   // mergeParticles(model);
-  merge2Particles(model);
-  // deleteParticles(model);
+   merge2Particles(model);
   // std::cout << pd.getNumberOfParticles() << "\n";
   // Updated upsampled particles
-  // upsampledParticlesUpdate(model, h);
+   //upsampledParticlesUpdate(model, h);
   // Clear Neighbors
   //
   model.clearNeighbors();
@@ -135,7 +135,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
           model.m_particles.m_x[i] += model.m_deltaX[i]/model.m_numConstraints[i];
         }
       }
-      
+
     }
     stabalizationIter++;
   }
@@ -149,7 +149,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
 
 
     for(unsigned int i = 0; i < pd.size(); ++i){
-      
+
       if(pd.getIsActive(i)){
         // boundary collision handling
         for(unsigned int boundaryIndex : model.m_boundaryNeighbors[i]){
@@ -354,42 +354,111 @@ void TimeStepGranularModel::checkBoundary(GranularModel &model){
         continue;
       }
 
-      // for(unsigned int particleIndex : model.m_neighbors[i]){
-      //   com += pd.getPosition(particleIndex); 
-      //   count++;
-      // }
-      // com /= count;
-
       Vector3r com(0.0,0.0,0.0);
-      unsigned int count = 0;       
+      unsigned int count = 0;
 
-      unsigned int n = model.m_neighbors[i][0];
-      Vector3r a = pd.getPosition(i);
-      Vector3r b = a.cross(pd.getPosition(n));
-      Real b_norm2 =  b.dot(b);
-      Vector3r proj = a.dot(b) * b /b_norm2;
-      Vector3r projSum(0.0,0.0,0.0);
+      // unsigned int n = model.m_neighbors[i][0];
+      // Vector3r a = pd.getPosition(i);
+      // Vector3r b = a.cross(pd.getPosition(n));
+      // Real b_norm2 =  b.dot(b);
+      // Vector3r proj = a.dot(b) * b /b_norm2;
+      // Vector3r projSum(0.0,0.0,0.0);
 
       for(unsigned int particleIndex : model.m_neighbors[i]){
         Vector3r p = pd.getPosition(particleIndex);
-        com += p;  
+        com += p;
         count++;
-        projSum += (proj) - (p.dot(b) * b/(b_norm2)); 
+        //projSum += (proj) - (p.dot(b) * b/(b_norm2));
       }
 
       com /= count;
-      Real dist = (pd.getPosition(i) - com).norm();
-      Real projSumNorm = projSum.norm(); 
-      
-      // std::cout << projSum << "\n";
 
-      bool projCheck = (projSumNorm < 0.00001) && (projSumNorm > -0.00001);
-      
-      if(dist > 0.001 || projCheck){
+      // Calculate the covariance matrix
+      Real xx, xy, xz, yy, yz, zz;
+      xx = xy = xz = yy = yz = zz = 0.0;
+
+      for(unsigned int particleIndex : model.m_neighbors[i]){
+        Vector3r p = pd.getPosition(particleIndex);
+        Vector3r r = p - com;
+        xx += r.x() * r.x();
+        xy += r.x() * r.y();
+        xz += r.x() * r.z();
+        yy += r.y() * r.y();
+        yz += r.y() * r.z();
+        zz += r.z() * r.z();
+      }
+
+      xx /= count;
+      xy /= count;
+      xz /= count;
+      yy /= count;
+      yz /= count;
+      zz /= count;
+
+      Vector3r weightedDir{0.0,0.0,0.0};
+      Real detX = yy*zz - yz*yz;
+      Vector3r axisDir{detX, xz*yz - xy*zz, xy*yz - xz*yy};
+      Real weight = detX * detX;
+
+      if(weightedDir.dot(axisDir) < 0.0){
+        weight = -weight;
+      }
+      weightedDir += weight * axisDir;
+
+      Real detY = xx*zz - xz*xz;
+      axisDir.x() = xz*yz - xy*zz;
+      axisDir.y() = detY;
+      axisDir.z() = xy*xz - yz*xx;
+
+      weight = detY * detY;
+      if(weightedDir.dot(axisDir) < 0.0){
+        weight = -weight;
+      }
+      weightedDir += weight * axisDir;
+
+      Real detZ = xx*yy - xy*xy;
+      axisDir.x() = xy*yz - xz*yy;
+      axisDir.y() = xy*xz - yz*xx;
+      axisDir.z() = detZ;
+
+      weight = detY * detY;
+      if(weightedDir.dot(axisDir) < 0.0){
+        weight = -weight;
+      }
+      weightedDir += weight * axisDir;
+
+      Vector3r normal = weightedDir.normalized();
+
+      Real avgDistance = 0.0;
+      for(unsigned int particleIndex : model.m_neighbors[i]){
+        Vector3r ab = pd.getPosition(particleIndex) - com;
+        Real n_norm = normal.norm();
+        if(n_norm != 0.0){
+          avgDistance += ab.dot(normal)/n_norm;  // projection of ab onto normal
+        }
+      }
+
+      Real dist = (pd.getPosition(i) - com).norm();
+      dist /= pd.getRadius(i);
+      bool projCheck = avgDistance == 0.0;
+
+      std::cout << dist << "\n";
+      if(dist < 1.2){
         model.m_isBoundary[i] = true;
       }else{
         model.m_isBoundary[i] = false;
       }
+      // Real projSumNorm = projSum.norm();
+
+      // std::cout << avgDistance << "\n";
+
+      // bool projCheck = (projSumNorm < 0.00001) && (projSumNorm > -0.00001);
+
+      // if(dist > 0.001 || projCheck){
+      //   model.m_isBoundary[i] = true;
+      // }else{
+      //   model.m_isBoundary[i] = false;
+      // }
     }
     // std::cout << dist << "\n";
   }
@@ -398,14 +467,16 @@ void TimeStepGranularModel::checkBoundary(GranularModel &model){
 template <typename T> void quickDelete(unsigned int index, std::vector<T> &v){
   v[index] = v.back();
   v.pop_back();
-}  
+}
+
 
 void TimeStepGranularModel::merge2Particles(GranularModel &model){
   ParticleData &pd = model.getParticles();
   unsigned int n = pd.size();
-  
+  unsigned short maxMergeCount = 3;
+
   for(unsigned int i = 0; i < n ; ++i){
- 
+
     if(!model.m_isBoundary[i] && pd.getIsActive(i) && !model.getMergeFlag(i) && (pd.getMass(i) < model.maxMass)){
     // if there are no neighbors then skip
       if(model.m_neighbors[i].size() == 0){
@@ -427,7 +498,7 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model){
           validNeighborPresent = true;
         }
       }
-      
+
       // check to see if any neighbors are valid
       if(!validNeighborPresent){
         continue;
@@ -447,39 +518,57 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model){
 
       // std::cout << model.getMergeFlag(i) << "\n";
     }else if(model.m_isBoundary[i] && pd.getIsActive(i) && !model.getMergeFlag(i) && (pd.getMass(i) > model.minMass)){
-      // std::cout << "split" << "\n";
       if(model.m_inactive.size() > 0 ){
-        Real newMass = pd.getMass(i) * 0.5;   
-        Real newRadius = std::cbrt(pow(pd.getRadius(i) ,3) * 0.5);
-        Vector3r newPos = pd.getPosition(i) + Vector3r(newRadius,newRadius,0); 
-        Vector3r newVel = pd.getVelocity(i)*0.5;
-        pd.m_masses[i] = newMass;
-        pd.m_radius[i] = newRadius;
-        pd.m_v[i] = Vector3r(0.0,0.0,0.0);
-        unsigned int n = model.m_inactive.back();
-        pd.m_masses[n] = newMass;
-        pd.m_radius[n] = newRadius;
-        pd.m_x[n] = newPos;
-        pd.m_v[n] = Vector3r(0.0,0.0,0.0);
-        pd.setIsActive(n, true);
-        model.m_inactive.pop_back();
-      } 
+        // Real newMass = pd.getMass(i) * 0.5;
+        // Real newRadius = std::cbrt(pow(pd.getRadius(i) ,3) * 0.5);
+        // Vector3r newPos = pd.getPosition(i) + Vector3r(newRadius,newRadius,0);
+        // Vector3r newVel = pd.getVelocity(i)*0.5;
+        // pd.m_masses[i] = newMass;
+        // pd.m_radius[i] = newRadius;
+        // pd.m_v[i] = Vector3r(0.0,0.0,0.0);
+        // unsigned int n = model.m_inactive.back();
+        // pd.m_masses[n] = newMass;
+        // pd.m_radius[n] = newRadius;
+        // pd.m_x[n] = newPos;
+        // pd.m_v[n] = Vector3r(0.0,0.0,0.0);
+        // pd.setIsActive(n, true);
+        // model.m_inactive.pop_back();
+
+      //   Vector3r center = pd.getPosition(i);
+      //   Vector3r boundsMin = center - model.samplingRadius;
+      //   Vector3r boundsMax = center + model.samplingRadius;
+      //   std::uniform_real_distribution<Real> distX(boundsMin.x(),boundsMax.x());
+      //   std::uniform_real_distribution<Real> distY(boundsMin.y(),boundsMax.y());
+      //   std::uniform_real_distribution<Real> distZ(boundsMin.z(),boundsMax.z());
+
+
+      //   for(int i = 0; i < 10; ++i){
+      //     Vector3r vec(distX(model.gen),distY(model.gen),distZ(model.gen));
+      //     unsigned int index = model.m_inactiveUpsampled.back();
+      //     model.m_isActiveUpsampled[index] = true;
+      //     model.m_upsampledParticlesX[index] = vec;
+      //     model.m_upsampledParticlesV[index] = Vector3r(0.0,0.0,0.0);
+      //     model.m_inactiveUpsampled.pop_back();
+      //   }
+      //   // generate new upsampled neigbbors
+      }
     }
   }
 
   for(int i = 0; i < model.m_bigger.size(); ++i){
     unsigned int n_big = model.m_bigger[i];
     unsigned int n_small = model.m_smaller[i];
-    if(model.m_mergeCount[i] == 0){
-      Real deltaR = pow(pd.getRadius(n_small)* 0.5 ,3);
-      Real deltaM = pd.getMass(n_small) * 0.5;
+
+    if(model.m_mergeCount[i] < maxMergeCount){
+      Real ratio = (model.m_mergeCount[i] + 1)/(maxMergeCount + 1);
+      Real deltaR = pow(pd.getRadius(n_small)* ratio ,3);
+      Real deltaM = pd.getMass(n_small) * ratio;
       pd.m_radius[n_big]  =  std::cbrt(pow(pd.getRadius(n_big),3) + deltaR);
       pd.m_radius[n_small]  =  std::cbrt(pow(pd.getRadius(n_small),3) - deltaR);
-      pd.m_masses[n_big] += deltaM; 
-      pd.m_masses[n_small] -= deltaM; 
+      pd.m_masses[n_big] += deltaM;
+      pd.m_masses[n_small] -= deltaM;
       model.m_mergeCount[i]++;
-    }else if(model.m_mergeCount[i] == 1){
-      // std::cout << 1 << "\n";
+    }else{
       Real deltaR =   pow(pd.getRadius(n_small),3);
       Real deltaM = pd.getMass(n_small);
       pd.m_radius[n_big] = std::cbrt(pow(pd.getRadius(n_big),3) + deltaR);
@@ -491,7 +580,8 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model){
       quickDelete(i, model.m_bigger);
       quickDelete(i, model.m_smaller);
       quickDelete(i, model.m_mergeCount);
-      
+
+      // Merge upsampled neigbbors
       int n_neighbors = model.m_neighborsUpsampled[n_small].size();
       unsigned int n = std::min(10,n_neighbors);
       for(int j = 0; j < n; ++j){
@@ -499,6 +589,35 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model){
         model.m_inactiveUpsampled.push_back(model.m_neighborsUpsampled[n_small][j]);
       }
     }
+    // if(model.m_mergeCount[i] == 0){
+    //   Real deltaR = pow(pd.getRadius(n_small)* 0.5 ,3);
+    //   Real deltaM = pd.getMass(n_small) * 0.5;
+    //   pd.m_radius[n_big]  =  std::cbrt(pow(pd.getRadius(n_big),3) + deltaR);
+    //   pd.m_radius[n_small]  =  std::cbrt(pow(pd.getRadius(n_small),3) - deltaR);
+    //   pd.m_masses[n_big] += deltaM;
+    //   pd.m_masses[n_small] -= deltaM;
+    //   model.m_mergeCount[i]++;
+    // }else if(model.m_mergeCount[i] == 1){
+    //   // std::cout << 1 << "\n";
+    //   Real deltaR =   pow(pd.getRadius(n_small),3);
+    //   Real deltaM = pd.getMass(n_small);
+    //   pd.m_radius[n_big] = std::cbrt(pow(pd.getRadius(n_big),3) + deltaR);
+    //   pd.m_masses[n_big] += deltaM;
+    //   model.m_mergeFlag[n_big] = false;
+    //   model.m_mergeFlag[n_small] = false;
+    //   pd.setIsActive(n_small, false);
+    //   model.m_inactive.push_back(n_small);
+    //   quickDelete(i, model.m_bigger);
+    //   quickDelete(i, model.m_smaller);
+    //   quickDelete(i, model.m_mergeCount);
+
+    //   int n_neighbors = model.m_neighborsUpsampled[n_small].size();
+    //   unsigned int n = std::min(10,n_neighbors);
+    //   for(int j = 0; j < n; ++j){
+    //     model.m_isActiveUpsampled[model.m_neighborsUpsampled[n_small][j]] = false;
+    //     model.m_inactiveUpsampled.push_back(model.m_neighborsUpsampled[n_small][j]);
+    //   }
+    // }
   }
 }
 

@@ -1,6 +1,13 @@
 #pragma once
 
-#include <eigen3/Eigen/Dense>
+#if defined(__linux__)
+    #include <eigen3/Eigen/Dense>
+    #include <omp.h>
+#elif defined(__APPLE__)
+    #include <Eigen/Dense>
+    #include "/usr/local/include/libomp/17.0.1/include/omp.h"
+#endif
+
 #include <float.h>
 #include <iostream>
 
