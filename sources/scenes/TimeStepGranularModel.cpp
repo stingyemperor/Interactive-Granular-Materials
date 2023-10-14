@@ -53,12 +53,12 @@ void TimeStepGranularModel::step(GranularModel &model, CompactNSearch::Neighborh
   }
 
 
-  checkBoundary(model);
+  //checkBoundary(model);
   // mergeParticles(model);
-   merge2Particles(model);
+   //merge2Particles(model);
   // std::cout << pd.getNumberOfParticles() << "\n";
   // Updated upsampled particles
-   //upsampledParticlesUpdate(model, h);
+   upsampledParticlesUpdate(model, h);
   // Clear Neighbors
   //
   model.clearNeighbors();
@@ -92,18 +92,23 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
   //   model.setNumConstraints(i, 0);
   // }
 
-  // solve stabalization constraints
   while(stabalizationIter < maxStabalizationIter){
 
-    #pragma omp parallel default(shared)
-    {
-      #pragma omp for schedule(static)
-      for(unsigned int i = 0; i < pd.size(); ++i){
-        model.getDeltaX(i).setZero();
-        model.m_numConstraints[i] = 0;
-      }
+  // #ifdef _MSC_VER
+	//   concurrency::parallel_for_each(
+  // #elif defined(__APPLE__) && defined(__clang__)
+  //   std::for_each(oneapi::dpl::execution::par,
+  // #else
+	//   __gnu_parallel::for_each(
+  // #endif
+
+    for(unsigned int i = 0; i < pd.size(); ++i){
+      model.getDeltaX(i).setZero();
+      model.m_numConstraints[i] = 0;
     }
 
+
+    #pragma omp parallel for
     for(unsigned int i = 0; i < pd.size(); ++i){
       if(pd.getIsActive(i)){
         // boundary collision handling
@@ -118,6 +123,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
       }
     }
 
+    #pragma omp parallel for
     // Update estimated position
     for(unsigned int i = 0; i < pd.size(); ++i){
 
@@ -140,14 +146,67 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
     stabalizationIter++;
   }
 
+
+
+  // solve stabalization constraints
+  // while(stabalizationIter < maxStabalizationIter){
+
+  //   #pragma omp parallel default(shared)
+  //   {
+  //     #pragma omp for schedule(static)
+  //     for(unsigned int i = 0; i < pd.size(); ++i){
+  //       model.getDeltaX(i).setZero();
+  //       model.m_numConstraints[i] = 0;
+  //     }
+  //   }
+
+  //   #pragma omp parallel for
+  //   for(unsigned int i = 0; i < pd.size(); ++i){
+  //     if(pd.getIsActive(i)){
+  //       // boundary collision handling
+  //       for(unsigned int boundaryIndex : model.m_boundaryNeighbors[i]){
+  //         boundaryConstraint(model, i, boundaryIndex);
+  //       }
+  //       // inter particle collision handling
+  //       for(unsigned int particleIndex : model.m_neighbors[i]){
+  //         contactConstraint(model, i, particleIndex);
+  //         // contactConstraintFriction(model, i, particleIndex);
+  //       }
+  //     }
+  //   }
+
+  //   #pragma omp parallel for
+  //   // Update estimated position
+  //   for(unsigned int i = 0; i < pd.size(); ++i){
+
+  //     if(pd.getIsActive(i)){
+
+  //       if(model.m_numConstraints[i] == 0){
+  //       // vvvvvvvvvv stabalization for collision vvvvvvvvvvvvvvvvvvvvvv
+  //         model.m_particles.m_oldX[i] += model.m_deltaX[i];
+  //       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  //         model.m_particles.m_x[i] += model.m_deltaX[i];
+  //       }else{
+  //        // vvvvvvvvvv stabalization for collision vvvvvvvvvvvvvvvvvvvvvv
+  //         model.m_particles.m_oldX[i] += model.m_deltaX[i]/model.m_numConstraints[i];
+  //         // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  //         model.m_particles.m_x[i] += model.m_deltaX[i]/model.m_numConstraints[i];
+  //       }
+  //     }
+
+  //   }
+  //   stabalizationIter++;
+  // }
+
   // solver iterations
   while(iter < maxIter){
+    #pragma omp parallel for
     for(unsigned int i = 0; i < pd.size(); ++i){
       model.getDeltaX(i).setZero();
       model.m_numConstraints[i] = 0;
     }
 
-
+    #pragma omp parallel for
     for(unsigned int i = 0; i < pd.size(); ++i){
 
       if(pd.getIsActive(i)){
@@ -164,6 +223,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model){
     }
 
     // Update estimated position
+    #pragma omp parallel for
     for(unsigned int i = 0; i < pd.size(); ++i){
       if(pd.getIsActive(i)){
         if(model.m_numConstraints[i] == 0){
@@ -268,13 +328,13 @@ void TimeStepGranularModel::contactConstraintFriction(GranularModel &model, cons
 void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const Real h){
 
   // Vector3r g(0.0,-9.81,0.0);
-  Real delta_t = static_cast<Real>(0.005);
+  Real delta_t = static_cast<Real>(0.0075);
   Real radiusLR = 0.025;
   Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
   Real h_HR_2 = 9.0 * radiusLR * radiusLR;
   // #pragma omp parallel
   {
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
       if(model.m_isActiveUpsampled[i]){
         Real w_ij_sum = 0;
@@ -297,11 +357,12 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
 
         for(unsigned int particleIndex : model.m_upsampledBoundaryNeighbors[i]){
           Vector3r x_ij = model.m_upsampledParticlesX[i] - model.getBoundaryX(particleIndex);
-          Real x_ij_norm_2 = x_ij.norm() * x_ij.norm();
+          Real x_ij_norm_2 = x_ij.norm() * x_ij.norm()*1.0;
           Real temp = (static_cast<Real>(1.0)  - (x_ij_norm_2/(h_HR_2)));
           Real w_ij = std::max(static_cast<Real>(0.0), temp*temp*temp);
           weights.push_back(w_ij);
           w_ij_sum += w_ij;
+          w_ij_v_j_sum += w_ij * Vector3r(0.01,0.01,0.01);
         }
 
         if(weights.empty()){
@@ -434,23 +495,24 @@ void TimeStepGranularModel::checkBoundary(GranularModel &model){
         Vector3r ab = pd.getPosition(particleIndex) - com;
         Real n_norm = normal.norm();
         if(n_norm != 0.0){
-          avgDistance += ab.dot(normal)/n_norm;  // projection of ab onto normal
+          avgDistance += abs(ab.dot(normal)/n_norm);  // projection of ab onto normal
         }
       }
-
+      //std::cout << count << "\n";
+      avgDistance /= count;
       Real dist = (pd.getPosition(i) - com).norm();
       dist /= pd.getRadius(i);
-      bool projCheck = avgDistance == 0.0;
+      bool projCheck = avgDistance < 0.01;
 
-      std::cout << dist << "\n";
-      if(dist < 1.2){
+      //std::cout << dist << "\n";
+      if(dist < 1.2 || projCheck){
         model.m_isBoundary[i] = true;
       }else{
         model.m_isBoundary[i] = false;
       }
       // Real projSumNorm = projSum.norm();
 
-      // std::cout << avgDistance << "\n";
+      std::cout << avgDistance << "\n";
 
       // bool projCheck = (projSumNorm < 0.00001) && (projSumNorm > -0.00001);
 

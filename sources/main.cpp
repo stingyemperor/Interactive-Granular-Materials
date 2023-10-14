@@ -10,6 +10,7 @@
 #include "entities/Simulation.hpp"
 #include "utils/CompactNSearch.h"
 #include "random"
+#include <fstream>
 
 using namespace PBD;
 using namespace Utilities;
@@ -41,11 +42,15 @@ const Real containerDepth = (depth + 1)*particleRadius*static_cast<Real>(2.0);
 const Real containerHeight = 4.0;
 
 
+
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void)
 {
+  unsigned int framecount = 0;
+  bool write = true;
+  std::ofstream file;
   // Initialization
   //--------------------------------------------------------------------------------------
   const int screenWidth = 1280;
@@ -92,7 +97,6 @@ int main(void)
 
     if (IsKeyDown('Z')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     //----------------------------------------------------------------------------------
-
     // Draw
     //----------------------------------------------------------------------------------
     BeginDrawing();
@@ -105,6 +109,9 @@ int main(void)
     //std::cout << GetFPS()  << "\n";
     // std::cout << GetFrameTime() << "\n";
     simulation.step(model, nsearch);
+
+    std::string path = "../outputHR/" + std::to_string(framecount) + ".csv";
+    file.open(path);
     // std::cout << model.m_bigger.size() << "\n";
 
     // if(IsKeyDown('P')){
@@ -112,40 +119,37 @@ int main(void)
         if(model.m_particles.getIsActive(i)){
         Vector3r particle_pos = model.getParticles().getPosition(i);
         Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()};
-        if(model.m_isBoundary[i] == true){
-          DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
-        }else{
+
+        // file << std::to_string(particle_pos.x()) << "," << std::to_string(particle_pos.y()) << "," << std::to_string(particle_pos.z()) << "\n";
+
+        // if(model.m_isBoundary[i] == true){
+        //   DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, BLACK);
+        // }else{
+        //   DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
+        // }
           DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
-        }
-          //DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i)*2.0, WHITE);
         }
       }
     // }
 
-    // for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
-    //   if(model.m_isActiveUpsampled[i]){
-    //     Vector3r particle_pos = model.getUpsampledX(i);
-    //     Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()};
-    //     DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
-    //   }
-    // }
+    for(unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i){
+      if(model.m_isActiveUpsampled[i]){
+        Vector3r particle_pos = model.getUpsampledX(i);
+        Vector3 pos = {(float)particle_pos.x(),(float)particle_pos.y(),(float)particle_pos.z()};
+        // file << std::to_string(particle_pos.x()) << "," << std::to_string(particle_pos.y()) << "," << std::to_string(particle_pos.z()) << "\n";
+        DrawBillboard(camera, sphere, pos, 2.0*model.getParticleRadiusUpsampled(), WHITE);
+      }
+    }
     // std::cout << model.m_particles.size() << "\n";
     // std::cout << model.m_inactiveUpsampled.size() << "\n";
     if(IsKeyDown('F')){
       simulation.applyForce(model);
     }
-    // DrawSphere(Vector3{0,0,0}, 1, GREEN);
 
-    // std::cout << model.m_upsampledParticlesX.size() << "\n";
-    // for(unsigned int i = 0; i < model.m_boundaryX.size(); ++i){
-    //   Vector3r particle_pos = model.getBoundaryX(i);
-    //   Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(), (float)particle_pos.z()};
-    //   DrawSphereWires(pos, 0.025, 3, 3, WHITE);
-    // }
-    // particle_system.draw(camera,sphere);
-    // // std::cout << GetFrameTime() << std::endl;
-    // simulation.simulate(&particle_system.particles, 0.01f, nsearch,plane);
-    // plane.draw();
+    write = false;
+    file.close();
+    framecount++;
+
     DrawGrid(6,6);
     EndShaderMode();
     EndMode3D();

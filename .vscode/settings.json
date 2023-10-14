@@ -85,6 +85,8 @@
         "optional": "cpp",
         "queue": "cpp",
         "span": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "regex": "cpp",
+        "stack": "cpp"
     }
 }
