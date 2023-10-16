@@ -39,7 +39,7 @@ function(add_git_dependency libName gitURL gitTag)
     target_compile_options(${libName} PRIVATE "-w")
 endfunction()
 
-if(APPLE AND NOT UNIX)  
+if(APPLE)
 include_directories(
     ${EIGEN_ROOT_DIR}
     # ${ONEDPL_ROOT_DIR}
@@ -121,7 +121,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 ###openmP######################
-if(APPLE AND NOT UNIX)
+if(APPLE)
 set(OpenMP_C "${CMAKE_C_COMPILER}")
 set(OpenMP_C_FLAGS "-Xclang -fopenmp -I/usr/local/Cellar/libomp/14.0.0/include")
 set(OpenMP_C_LIB_NAMES "libomp")
@@ -133,7 +133,7 @@ set(OpenMP_CXX_LIB_NAMES "libomp")
 set(OpenMP_libomp_LIBRARY "omp")
 endif()
 
-if(APPLE AND NOT UNIX)
+if(APPLE)
 link_directories("/usr/local/Cellar/libomp/14.0.0/lib/")
 target_link_directories(${PROJECT_NAME} PRIVATE "/usr/local/Cellar/libomp/14.0.0/lib/")
 endif()
