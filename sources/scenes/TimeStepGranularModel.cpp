@@ -356,13 +356,25 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
         }
 
         for(unsigned int particleIndex : model.m_upsampledBoundaryNeighbors[i]){
+          Vector3r vel = model.m_upsampledParticlesV[i];
+          if(vel.norm() < 0.5){
+            continue;
+          }
+
           Vector3r x_ij = model.m_upsampledParticlesX[i] - model.getBoundaryX(particleIndex);
+          // calculate angle between the veloctiy the vector joining the boundary particle and the upsampled particle
+          Real angle = std::atan2(x_ij.cross(vel).norm(), x_ij.dot(vel));
+          Vector3r boundaryVel(0.0,0.0,0.0);
+          if(angle >= 0.5*M_PI){
+            boundaryVel = vel;
+          }
+
           Real x_ij_norm_2 = x_ij.norm() * x_ij.norm()*1.0;
           Real temp = (static_cast<Real>(1.0)  - (x_ij_norm_2/(h_HR_2)));
           Real w_ij = std::max(static_cast<Real>(0.0), temp*temp*temp);
           weights.push_back(w_ij);
           w_ij_sum += w_ij;
-          w_ij_v_j_sum += w_ij * Vector3r(0.01,0.01,0.01);
+          w_ij_v_j_sum += w_ij * boundaryVel;
         }
 
         if(weights.empty()){
@@ -383,10 +395,9 @@ void TimeStepGranularModel::upsampledParticlesUpdate(GranularModel &model, const
         Real alpha_i = static_cast<Real>(0.0);
         // Real c1 = static_cast<Real>(512.0)/static_cast<Real>(729.0);
         Real c1 = 0.7023319616;
-        Real c2 = static_cast<Real>(0.6);
+        Real c2 = static_cast<Real>(0.60);
 
-        Real c2Check;
-        c2Check = w_ij_max/w_ij_sum;
+        Real c2Check = w_ij_max/w_ij_sum;
         bool alphaCheck = (w_ij_max <= c1) || (c2Check >= c2);
 
         if(alphaCheck){
