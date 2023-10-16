@@ -22,8 +22,7 @@ if (OPENMP_FOUND)
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 	endif()
 endif(OPENMP_FOUND)
-endif()
-
+endif (UNIX)
 ##########################################################################################
 # Add dependencies with FetchContent
 ##########################################################################################
@@ -39,12 +38,12 @@ function(add_git_dependency libName gitURL gitTag)
     target_compile_options(${libName} PRIVATE "-w")
 endfunction()
 
-if(APPLE AND NOT UNIX)  
+if(UNIX AND NOT APPLE)  
 include_directories(
     ${EIGEN_ROOT_DIR}
     # ${ONEDPL_ROOT_DIR}
 )
-endif()
+endif(UNIX)
 
 #add glm
 find_package(glm REQUIRED)
@@ -121,7 +120,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 ###openmP######################
-if(APPLE AND NOT UNIX)
+
 set(OpenMP_C "${CMAKE_C_COMPILER}")
 set(OpenMP_C_FLAGS "-Xclang -fopenmp -I/usr/local/Cellar/libomp/14.0.0/include")
 set(OpenMP_C_LIB_NAMES "libomp")
@@ -131,12 +130,11 @@ set(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
 set(OpenMP_CXX_FLAGS "-Xclang -fopenmp -I/usr/local/Cellar/libomp/14.0.0/include")
 set(OpenMP_CXX_LIB_NAMES "libomp")
 set(OpenMP_libomp_LIBRARY "omp")
-endif()
 
-if(APPLE AND NOT UNIX)
+if(UNIX AND NOT APPLE)
 link_directories("/usr/local/Cellar/libomp/14.0.0/lib/")
 target_link_directories(${PROJECT_NAME} PRIVATE "/usr/local/Cellar/libomp/14.0.0/lib/")
-endif()
+endif(UNIX)
 
 
 if (APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")

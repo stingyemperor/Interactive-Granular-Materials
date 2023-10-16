@@ -106,7 +106,7 @@ int main(void)
     BeginMode3D(camera);
     BeginShaderMode(alpha);
 
-    //std::cout << GetFPS()  << "\n";
+    // std::cout << GetFPS()  << "\n";
     // std::cout << GetFrameTime() << "\n";
     simulation.step(model, nsearch);
 
