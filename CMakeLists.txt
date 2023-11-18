@@ -4,14 +4,12 @@ project(app CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-#set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_BUILD_TYPE Release)
 include(FetchContent)
 
 set(EIGEN_ROOT_DIR "/usr/local/include/eigen/3.4.0_1/include/eigen3/")
 set(ONEDPL_ROOT_DIR "/usr/local/include/onedpl/2022.0.0/include/")
-
-
 
 if (UNIX AND NOT APPLE)
 find_package(OpenMP)
@@ -87,7 +85,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 ##########################################################################################
 
 add_definitions( -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
-
+#add_definitions(-DSOME_DEFINITION)
+#
 # Setting ASSETS_PATH
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O0 -DDEBUG")
