@@ -46,13 +46,10 @@ const Real containerHeight = 4.0;
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void) {
-  unsigned int framecount = 0;
-  bool write = true;
-  std::ofstream file;
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 1280;
-  const int screenHeight = 720;
+  const int screenWidth = 1920;
+  const int screenHeight = 1080;
   InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
   Texture2D sphere = LoadTexture("../assets/sphere.png");
@@ -72,22 +69,11 @@ int main(void) {
   //--------------------------------------------------------------------------------------
 
   // ------------ Particle Stuff --------------------------------------
-
-  // ParticleSystem particle_system;
-  // BoxPosGen box_pos_gen;
-  // Simulation simulation;
-  // box_pos_gen.generate(&particle_system.particles);
-  // // std::cout<< GetWorkingDirectory() << std::endl;
-  // // TODO change the radius for search
-  // CompactNSearch::NeighborhoodSearch nsearch(0.5f);
-  // Plane plane;
-
   createBreakingDam(nsearch);
   // ------------ Particle Stuff --------------------------------------
   // Main game loop
   while (!WindowShouldClose()) // Detect window close button or ESC key
   {
-
     // Update
     //----------------------------------------------------------------------------------
     // UpdateCamera(&camera, CAMERA_FREE);
@@ -107,21 +93,12 @@ int main(void) {
     // std::cout << GetFPS()  << "\n";
     // std::cout << GetFrameTime() << "\n";
     simulation.step(model, nsearch);
-
-    std::string path = "../outputHR/" + std::to_string(framecount) + ".csv";
-    file.open(path);
-    // std::cout << model.m_bigger.size() << "\n";
-
     // if(IsKeyDown('P')){
     for (unsigned int i = 0; i < model.m_particles.size(); ++i) {
       if (model.m_particles.getIsActive(i)) {
         Vector3r particle_pos = model.getParticles().getPosition(i);
         Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(),
                        (float)particle_pos.z()};
-
-        // file << std::to_string(particle_pos.x()) << "," <<
-        // std::to_string(particle_pos.y()) << "," <<
-        // std::to_string(particle_pos.z()) << "\n";
 
         // if(model.m_isBoundary[i] == true){
         //   DrawBillboard(camera, sphere, pos,
@@ -141,9 +118,6 @@ int main(void) {
         Vector3r particle_pos = model.getUpsampledX(i);
         Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(),
                        (float)particle_pos.z()};
-        // file << std::to_string(particle_pos.x()) << "," <<
-        // std::to_string(particle_pos.y()) << "," <<
-        // std::to_string(particle_pos.z()) << "\n";
         DrawBillboard(camera, sphere, pos,
                       2.0 * model.getParticleRadiusUpsampled(), WHITE);
       }
@@ -153,11 +127,6 @@ int main(void) {
     if (IsKeyDown('F')) {
       simulation.applyForce(model);
     }
-
-    write = false;
-    file.close();
-    framecount++;
-
     DrawGrid(6, 6);
     EndShaderMode();
     EndMode3D();
@@ -165,7 +134,6 @@ int main(void) {
     EndDrawing();
     //----------------------------------------------------------------------------------
   }
-
   // De-Initialization
   //--------------------------------------------------------------------------------------
   CloseWindow(); // Close window and OpenGL context
