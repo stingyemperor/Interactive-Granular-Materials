@@ -31,6 +31,7 @@ namespace PBD{
     std::vector<unsigned int> m_inactive;
     std::vector<bool> m_isActiveUpsampled;
     std::vector<unsigned int> m_inactiveUpsampled;
+    std::vector<unsigned int> m_floorCollision;
     // std::vector<Vector3r> m_neighbors;
     std::vector<std::vector<unsigned int>> m_neighbors;
     std::vector<std::vector<unsigned int>> m_boundaryNeighbors;

@@ -34,6 +34,7 @@ void GranularModel::cleanupModel(){
   m_inactive.clear();
   m_isActiveUpsampled.clear();
   m_inactiveUpsampled.clear();
+  m_floorCollision.clear();
 }
 
 ParticleData &GranularModel::getParticles(){
@@ -89,6 +90,7 @@ void GranularModel::resizeGranularParticles(const unsigned int newSize){
   m_smaller.reserve(newSize);
   m_mergeCount.reserve(newSize);
   m_inactive.reserve(newSize);
+  m_floorCollision.reserve(newSize);
 }
 
 void GranularModel::releaseParticles(){
@@ -103,6 +105,7 @@ void GranularModel::releaseParticles(){
   m_mergeCount.clear();
   m_inactive.clear();
   m_isActiveUpsampled.clear();
+  m_floorCollision.clear();
 }
 
 void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* granularParticles,
@@ -119,6 +122,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
     m_mergeFlag[i] = false;
     m_isBoundary[i] = false;
     m_particles.m_isActive[i] = true;
+    m_floorCollision[i] = false;
   }
 
 
@@ -151,7 +155,7 @@ void GranularModel::initModel(const unsigned int nGranularParticles, Vector3r* g
   reset();
 }
 
-// neoghbors not including boundary particles
+// neighbors not including boundary particles
 void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearch, unsigned int point_set_id_1, unsigned int point_set_id_2, unsigned int point_set_id_3){
   // std::cout << "Particles : "<< m_particles.size() << "\n";
   nsearch.find_neighbors();
@@ -161,7 +165,7 @@ void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearc
 
   for(unsigned int i = 0 ; i < ps.n_points() ; ++i){
     std::vector<unsigned int> neighborParticle;
-    std::vector<unsigned int> neighborBoundary;
+    //std::vector<unsigned int> neighborBoundary;
     std::vector<unsigned int> neighborUpsampled;
 
     for(unsigned int j = 0; j < ps.n_neighbors(point_set_id_1,i); ++j){
@@ -170,17 +174,17 @@ void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearc
         neighborParticle.push_back(pid);
       }
     }
-    for(unsigned int k = 0; k < ps.n_neighbors(point_set_id_2, i); ++k){
-      const unsigned int pid = ps.neighbor(point_set_id_2, i, k);
-      neighborBoundary.push_back(pid);
-    }
+    // for(unsigned int k = 0; k < ps.n_neighbors(point_set_id_2, i); ++k){
+    //   const unsigned int pid = ps.neighbor(point_set_id_2, i, k);
+    //   neighborBoundary.push_back(pid);
+    // }
 
     for(unsigned int k = 0; k < ps.n_neighbors(point_set_id_3,i); ++k){
       const unsigned int pid = ps.neighbor(point_set_id_3, i, k);
       neighborUpsampled.push_back(pid);
     }
     m_neighbors.push_back(neighborParticle);
-    m_boundaryNeighbors.push_back(neighborBoundary);
+    // m_boundaryNeighbors.push_back(neighborBoundary);
     m_neighborsUpsampled.push_back(neighborUpsampled);
   }
 
@@ -194,13 +198,13 @@ void GranularModel::generateNeighbors(CompactNSearch::NeighborhoodSearch &nsearc
       }
     }
 
-    std::vector<unsigned int> neighborBoundaryUpsampled;
-    for(unsigned int j = 0; j < psUpsampled.n_neighbors(point_set_id_2, i); ++j){
-      const unsigned int pid = psUpsampled.neighbor(point_set_id_2, i, j);
-      neighborBoundaryUpsampled.push_back(pid);
-    }
+    // std::vector<unsigned int> neighborBoundaryUpsampled;
+    // for(unsigned int j = 0; j < psUpsampled.n_neighbors(point_set_id_2, i); ++j){
+    //   const unsigned int pid = psUpsampled.neighbor(point_set_id_2, i, j);
+    //   neighborBoundaryUpsampled.push_back(pid);
+    // }
     m_upsampledNeighbors.push_back(neighborUpsampled);
-    m_upsampledBoundaryNeighbors.push_back(neighborBoundaryUpsampled);
+    //m_upsampledBoundaryNeighbors.push_back(neighborBoundaryUpsampled);
   }
 }
 

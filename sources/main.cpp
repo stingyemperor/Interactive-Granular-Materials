@@ -54,8 +54,8 @@ const Real containerHeight = 4.0;
 int main(void) {
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 2560;
-  const int screenHeight = 1440;
+  const int screenWidth = 1920;
+  const int screenHeight = 1080;
   InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
   Texture2D sphere = LoadTexture("../assets/sphere.png");
