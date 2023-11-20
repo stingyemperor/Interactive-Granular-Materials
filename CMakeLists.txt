@@ -22,6 +22,10 @@ if (OPENMP_FOUND)
 endif(OPENMP_FOUND)
 endif()
 
+if(NOT TARGET spdlog)
+    find_package(spdlog REQUIRED)
+endif()
+
 ##########################################################################################
 # Add dependencies with FetchContent
 ##########################################################################################

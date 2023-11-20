@@ -4,9 +4,11 @@
 #include "raylib.h"
 #include "scenes/GranularModel.hpp"
 #include "scenes/TimeStepGranularModel.hpp"
+#include "spdlog/spdlog.h"
 #include "utils/Common.hpp"
 #include "utils/CompactNSearch.h"
 #include <array>
+#include <eigen3/Eigen/src/Core/GlobalFunctions.h>
 #include <fstream>
 #include <memory>
 #include <random>
@@ -21,6 +23,8 @@ void buildModel();
 void createBreakingDam(NeighborhoodSearch &nsearch);
 void addWall(const Vector3r &minX, const Vector3r &maxX,
              std::vector<Vector3r> &boundaryParticles);
+void addWallHCP(const unsigned int heigth, unsigned int width,
+                unsigned int depth, std::vector<Vector3r> &boundaryParticles);
 void initBoundaryData(std::vector<Vector3r> &boundaryParticles);
 void createPointSet(NeighborhoodSearch &nsearch);
 void render();
@@ -34,12 +38,14 @@ NeighborhoodSearch nsearch(0.075);
 const Real particleRadius = static_cast<Real>(0.025);
 const Real particleRadiusUpsampled = 0.5 * particleRadius;
 const unsigned int width = 15;
-const unsigned int depth = 15;
+const unsigned int depth = 20;
 const unsigned int height = 20;
 const Real containerWidth =
-    (width + 1) * particleRadius * static_cast<Real>(2.0 * 5.0);
+    (width + 1) * particleRadius * static_cast<Real>(2.0 * 3.0);
+// const Real containerWidth =
+//     (width + 1) * particleRadius * static_cast<Real>(2.0 * 5.0);
 const Real containerDepth =
-    (depth + 1) * particleRadius * static_cast<Real>(2.0);
+    (depth + 1) * particleRadius * static_cast<Real>(2.0 * 3.0);
 const Real containerHeight = 4.0;
 
 //------------------------------------------------------------------------------------
@@ -48,8 +54,8 @@ const Real containerHeight = 4.0;
 int main(void) {
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 1920;
-  const int screenHeight = 1080;
+  const int screenWidth = 2560;
+  const int screenHeight = 1440;
   InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
   Texture2D sphere = LoadTexture("../assets/sphere.png");
@@ -113,15 +119,24 @@ int main(void) {
     }
     // }
 
-    for (unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i) {
-      if (model.m_isActiveUpsampled[i]) {
-        Vector3r particle_pos = model.getUpsampledX(i);
+    if (IsKeyDown('B')) {
+      for (unsigned int i = 0; i < model.m_boundaryX.size(); ++i) {
+        Vector3r particle_pos = model.m_boundaryX[i];
         Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(),
                        (float)particle_pos.z()};
-        DrawBillboard(camera, sphere, pos,
-                      2.0 * model.getParticleRadiusUpsampled(), WHITE);
+        DrawSphereWires(pos, 0.025, 6, 6, WHITE);
       }
     }
+
+    // for (unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i) {
+    //   if (model.m_isActiveUpsampled[i]) {
+    //     Vector3r particle_pos = model.getUpsampledX(i);
+    //     Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(),
+    //                    (float)particle_pos.z()};
+    //     DrawBillboard(camera, sphere, pos,
+    //                   2.0 * model.getParticleRadiusUpsampled(), WHITE);
+    //   }
+    // }
     // std::cout << model.m_particles.size() << "\n";
     // std::cout << model.m_inactiveUpsampled.size() << "\n";
     if (IsKeyDown('F')) {
@@ -253,7 +268,35 @@ void addWall(const Vector3r &minX, const Vector3r &maxX,
   }
 }
 
+void addWallHCP(const unsigned int width, const unsigned int height,
+                const unsigned int depth,
+                std::vector<Vector3r> &boundaryParticles) {
+
+  double diam = 2.0 * 0.025;
+  double offset = diam * sqrt(2.0 / 3.0);
+  for (unsigned int i = 0; i < width; ++i) {
+    for (unsigned int j = 0; j < height; ++j) {
+      for (unsigned int k = 0; k < depth; ++k) {
+        boundaryParticles[i + j + k] =
+            Vector3r(i * diam, j * (i % 2) * (offset / 2.0), k * diam);
+      }
+    }
+  }
+}
+
+void addFloor(const int size, std::vector<Vector3r> &boundaryParticles) {
+  Real diam = 0.025 * 2.0;
+  Real halfSize = size / 2.0;
+
+  for (unsigned int i = -halfSize; i < halfSize; ++i) {
+    for (unsigned int j = -halfSize; j < halfSize; ++j) {
+      boundaryParticles.push_back(Vector3r(i * diam, j * diam, 0));
+    }
+  }
+}
+
 void initBoundaryData(std::vector<Vector3r> &boundaryParticles) {
+
   const Real x1 = -containerWidth / 2.0;
   const Real x2 = containerWidth / 2.0;
   const Real y1 = 0.0;
@@ -264,17 +307,18 @@ void initBoundaryData(std::vector<Vector3r> &boundaryParticles) {
   const Real diam = 2.0 * particleRadius;
 
   // Floor
-  addWall(Vector3r(x1, y1, z1), Vector3r(x2, y1, z2), boundaryParticles);
+  // addWall(Vector3r(x1, y1, z1), Vector3r(x2, y1, z2), boundaryParticles);
+  // addWall(Vector3r(x1, y1, z1), Vector3r(x2, y1, z2), boundaryParticles);
   // Top
-  addWall(Vector3r(x1, y2, z1), Vector3r(x2, y2, z2), boundaryParticles);
+  // addWall(Vector3r(x1, y2, z1), Vector3r(x2, y2, z2), boundaryParticles);
   // Left
-  addWall(Vector3r(x1, y1, z1), Vector3r(x1, y2, z2), boundaryParticles);
+  // addWall(Vector3r(x1, y1, z1), Vector3r(x1, y2, z2), boundaryParticles);
   // Right
-  addWall(Vector3r(x2, y1, z1), Vector3r(x2, y2, z2), boundaryParticles);
+  // addWall(Vector3r(x2, y1, z1), Vector3r(x2, y2, z2), boundaryParticles);
   // Back
-  addWall(Vector3r(x1, y1, z1), Vector3r(x2, y2, z1), boundaryParticles);
+  // addWall(Vector3r(x1, y1, z1), Vector3r(x2, y2, z1), boundaryParticles);
   // Front
-  addWall(Vector3r(x1, y1, z2), Vector3r(x2, y2, z2), boundaryParticles);
+  // addWall(Vector3r(x1, y1, z2), Vector3r(x2, y2, z2), boundaryParticles);
 }
 
 void createPointSet(NeighborhoodSearch &nsearch) {
