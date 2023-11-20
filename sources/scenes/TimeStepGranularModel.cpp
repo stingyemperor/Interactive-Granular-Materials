@@ -122,7 +122,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model) {
         // floorConstraint(model, i);
         // for (unsigned int boundaryIndex : model.m_boundaryNeighbors[i]) {
         //   boundaryConstraint(model, i, boundaryIndex);
-        // }
+        //
         // inter particle collision handling
         for (unsigned int particleIndex : model.m_neighbors[i]) {
           contactConstraint(model, i, particleIndex);
@@ -263,7 +263,7 @@ void TimeStepGranularModel::floorFrictionConstraint(GranularModel &model,
   Vector3r p1 = pd.getPosition(x1);
 
   if (p1.y() < 0.0) {
-    Real normalForce = pd.getMass(x1) *
+    Real normalForce = pd.getMass(x1);
   }
 }
 
