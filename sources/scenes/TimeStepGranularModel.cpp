@@ -10,6 +10,7 @@
 // #include <omp.h>
 #include "random"
 #include <algorithm>
+#include <chrono>
 
 using namespace PBD;
 Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ",
@@ -17,7 +18,7 @@ Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ",
 std::string sep = "\n-----------------------------------------\n";
 
 void TimeStepGranularModel::step(GranularModel &model,
-                                 CompactNSearch::NeighborhoodSearch &nsearch) {
+                                 CompactNSearch::NeighborhoodSearch &nsearch,std::uniform_real_distribution<double> &distribution, std::mt19937 &generator) {
 
   TimeManager *tm = TimeManager::getCurrent();
   const Real h = tm->getTimeStepSize();
@@ -65,9 +66,9 @@ void TimeStepGranularModel::step(GranularModel &model,
     }
   }
 
-  checkBoundary(model);
+  // checkBoundary(model);
   //  mergeParticles(model);
-  merge2Particles(model);
+  // merge2Particles(model,distribution, generator);
   // std::cout << pd.getNumberOfParticles() << "\n";;
   // Updated upsampled particles
   // upsampledParticlesUpdate(model, h);
@@ -537,7 +538,6 @@ void TimeStepGranularModel::checkBoundary(GranularModel &model) {
       //   model.m_isBoundary[i] = false;
       // }
     }
-    // std::cout << dist << "\n";
   }
 }
 
@@ -546,10 +546,27 @@ template <typename T> void quickDelete(unsigned int index, std::vector<T> &v) {
   v.pop_back();
 }
 
-void TimeStepGranularModel::merge2Particles(GranularModel &model) {
+Vector3r samplePointSphere(Real radius, Vector3r &center, std::uniform_real_distribution<double> &distribution, std::mt19937 &generator){
+  // Real theta = 2 * M_PI * distribution(generator);
+  // Real phi = std::acos(1 - 2 * distribution(generator));
+  // Real x = std::sin(phi) * std::cos(theta);
+  // Real y = std::sin(phi) * std::sin(theta);
+  // Real z = std::cos(phi);
+
+  Real x = 0.0;
+  Real y = 0.0;
+  Real z = radius;
+  Vector3r point = (Vector3r(x,y,z) - center).normalized();
+  return point * radius;
+}
+
+void TimeStepGranularModel::merge2Particles(GranularModel &model,std::uniform_real_distribution<double> &distribution, std::mt19937 &generator) {
   ParticleData &pd = model.getParticles();
   unsigned int n = pd.size();
   unsigned short maxMergeCount = 3;
+  unsigned short maxSplit= 1;
+  unsigned short splitCount = 0;
+
 
   for (unsigned int i = 0; i < n; ++i) {
 
@@ -567,8 +584,7 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model) {
 
       for (unsigned int particleIndex : model.m_neighbors[i]) {
         Real dist = (pd.getPosition(i) - pd.getPosition(particleIndex)).norm();
-        // check if particle is marked for deletion
-        // bool isDelete = map.find(particleIndex) != map.end();
+        // when there are neighbors but they are all marked for merging
         if ((dist < distance) && (!model.m_mergeFlag[particleIndex]) &&
             pd.getIsActive(particleIndex)) {
           distance = dist;
@@ -598,9 +614,32 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model) {
     } else if (model.m_isBoundary[i] && pd.getIsActive(i) &&
                !model.getMergeFlag(i) && (pd.getMass(i) > model.minMass)) {
       if (model.m_inactive.size() > 0) {
-        // Real newMass = pd.getMass(i) * 0.5;
-        // Real newRadius = std::cbrt(pow(pd.getRadius(i) ,3) * 0.5);
-        // Vector3r newPos = pd.getPosition(i) +
+        if(splitCount < maxSplit){
+          splitCount++;
+          Real newMass = pd.getMass(i) * 0.5;
+          Real newRadius = std::cbrt(pow(pd.getRadius(i) ,3) * 0.5);
+
+          Vector3r newPos1 = samplePointSphere(newRadius, pd.getPosition(i),distribution, generator);
+          // antipodal point
+          Vector3r newPos2 = newPos1 * (-1.0);
+          newPos1 = newPos1 + pd.getPosition(i);
+          newPos2 = newPos2 + pd.getPosition(i);
+
+          // get the index for an inactive particle
+          unsigned int n = model.m_inactive.back();
+          model.m_inactive.pop_back();
+          // set the particle to new pos, mass, radius
+          pd.setIsActive(n, true);
+          pd.m_masses[n] = newMass;
+          pd.m_radius[n] = newRadius;
+          pd.m_x[n] = newPos1;
+          pd.m_v[n] = pd.getVelocity(i);
+
+          // set the current particle to the new pos, mass, and radius
+          pd.m_masses[i] = newMass;
+          pd.m_radius[i] = newRadius;
+          pd.m_x[i] = newPos2;
+        }
         // Vector3r(newRadius,newRadius,0); Vector3r newVel =
         // pd.getVelocity(i)*0.5; pd.m_masses[i] = newMass; pd.m_radius[i] =
         // newRadius; pd.m_v[i] = Vector3r(0.0,0.0,0.0); unsigned int n =

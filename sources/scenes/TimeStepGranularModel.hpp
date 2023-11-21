@@ -9,7 +9,7 @@ struct TimeStepGranularModel {
   TimeStepGranularModel(){};
   ~TimeStepGranularModel(){};
 
-  void step(GranularModel &model, CompactNSearch::NeighborhoodSearch &nsearch);
+  void step(GranularModel &model, CompactNSearch::NeighborhoodSearch &nsearch,std::uniform_real_distribution<double> &distribution, std::mt19937 &generator);
   void boundaryConstraint(GranularModel &model, const unsigned int x1,
                           const unsigned int x2);
   void floorConstraint(GranularModel &model, const unsigned int x1);
@@ -22,7 +22,7 @@ struct TimeStepGranularModel {
   void checkBoundary(GranularModel &model);
   void mergeParticles(GranularModel &model);
   void deleteParticles(GranularModel &model);
-  void merge2Particles(GranularModel &model);
+  void merge2Particles(GranularModel &model,std::uniform_real_distribution<double> &distribution, std::mt19937 &generator);
   void reset();
   void applyForce(GranularModel &model);
   void calculateAverageEnergy(GranularModel &model, std::ofstream &file);

@@ -13,6 +13,7 @@
 #include <memory>
 #include <random>
 #include <vector>
+#include <chrono>
 
 using namespace PBD;
 using namespace Utilities;
@@ -57,8 +58,8 @@ float deltaTime = 0.0;
 int main(void) {
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 2560;
-  const int screenHeight = 1440;
+  const int screenWidth = 1280;
+  const int screenHeight = 720;
   InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
   Texture2D sphere = LoadTexture("../assets/sphere.png");
@@ -72,6 +73,13 @@ int main(void) {
   camera.fovy = 45.0f;             // Camera field-of-view Y
   camera.projection = CAMERA_PERSPECTIVE; // Camera projection type
   std::ofstream file("energy.csv");
+
+  // ---------------------Random for sphere sampling ----------------------
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::mt19937 generator(seed);
+  std::uniform_real_distribution<double> uniform(0.0, 1.0);
+
+
 
   DisableCursor(); // Limit cursor to relative movement inside the window
 
@@ -102,9 +110,11 @@ int main(void) {
     BeginMode3D(camera);
     BeginShaderMode(alpha);
 
+    DrawGrid(16, 0.5);
+
     // std::cout << GetFPS()  << "\n";
     // std::cout << GetFrameTime() << "\n";
-    simulation.step(model, nsearch);
+    simulation.step(model, nsearch,uniform, generator);
     // if(IsKeyDown('P')){
     for (unsigned int i = 0; i < model.m_particles.size(); ++i) {
       if (model.m_particles.getIsActive(i)) {
