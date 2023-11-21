@@ -48,14 +48,17 @@ const Real containerDepth =
     (depth + 1) * particleRadius * static_cast<Real>(2.0 * 3.0);
 const Real containerHeight = 4.0;
 
+double currentTime = 0.0;
+double previousTime = GetTime();
+float deltaTime = 0.0;
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void) {
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 1920;
-  const int screenHeight = 1080;
+  const int screenWidth = 2560;
+  const int screenHeight = 1440;
   InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
   Texture2D sphere = LoadTexture("../assets/sphere.png");
@@ -68,6 +71,7 @@ int main(void) {
       (Vector3){0.0f, 1.0f, 0.0f}; // Camera up vector (rotation towards target)
   camera.fovy = 45.0f;             // Camera field-of-view Y
   camera.projection = CAMERA_PERSPECTIVE; // Camera projection type
+  std::ofstream file("energy.csv");
 
   DisableCursor(); // Limit cursor to relative movement inside the window
 
@@ -93,6 +97,8 @@ int main(void) {
 
     ClearBackground(DARKGRAY);
 
+    DrawText(TextFormat("CURRENT FPS: %i", (int)(1.0f / deltaTime)),
+             GetScreenWidth() - 220, 40, 20, GREEN);
     BeginMode3D(camera);
     BeginShaderMode(alpha);
 
@@ -139,9 +145,16 @@ int main(void) {
     // }
     // std::cout << model.m_particles.size() << "\n";
     // std::cout << model.m_inactiveUpsampled.size() << "\n";
+
+    currentTime = GetTime();
+    deltaTime = (float)(currentTime - previousTime);
+    previousTime = currentTime;
     if (IsKeyDown('F')) {
       simulation.applyForce(model);
     }
+
+    simulation.calculateAverageEnergy(model, file);
+
     DrawGrid(6, 6);
     EndShaderMode();
     EndMode3D();
@@ -153,7 +166,7 @@ int main(void) {
   //--------------------------------------------------------------------------------------
   CloseWindow(); // Close window and OpenGL context
   //--------------------------------------------------------------------------------------
-
+  file.close();
   return 0;
 }
 
@@ -324,8 +337,8 @@ void initBoundaryData(std::vector<Vector3r> &boundaryParticles) {
 void createPointSet(NeighborhoodSearch &nsearch) {
   model.m_pointId1 = nsearch.add_point_set(
       model.m_particles.getPosition(0).data(), model.m_particles.size());
-  model.m_pointId2 = nsearch.add_point_set(model.m_boundaryX.front().data(),
-                                           model.m_boundaryX.size());
+  // model.m_pointId2 = nsearch.add_point_set(model.m_boundaryX.front().data(),
+  // model.m_boundaryX.size());
   model.m_pointId3 =
       nsearch.add_point_set(model.m_upsampledParticlesX.front().data(),
                             model.m_upsampledParticlesX.size());

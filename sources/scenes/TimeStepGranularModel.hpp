@@ -25,5 +25,6 @@ struct TimeStepGranularModel {
   void merge2Particles(GranularModel &model);
   void reset();
   void applyForce(GranularModel &model);
+  void calculateAverageEnergy(GranularModel &model, std::ofstream &file);
 };
 } // namespace PBD

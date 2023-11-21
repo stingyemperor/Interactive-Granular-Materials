@@ -88,5 +88,6 @@
         "variant": "cpp",
         "regex": "cpp",
         "stack": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

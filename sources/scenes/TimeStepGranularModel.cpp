@@ -6,6 +6,7 @@
 #include "utils/Common.hpp"
 #include "utils/CompactNSearch.h"
 #include <cmath>
+#include <fstream>
 // #include <omp.h>
 #include "random"
 #include <algorithm>
@@ -21,6 +22,7 @@ void TimeStepGranularModel::step(GranularModel &model,
   TimeManager *tm = TimeManager::getCurrent();
   const Real h = tm->getTimeStepSize();
   ParticleData &pd = model.getParticles();
+  Vector3r normal(0.0, 1.0, 0.0);
 
   clearAccelerations(model);
 
@@ -56,13 +58,17 @@ void TimeStepGranularModel::step(GranularModel &model,
       if (difference > static_cast<Real>(0.01)) {
         pd.m_oldX[i] = pd.m_x[i];
       }
+      // floor collision check
+      if (model.m_floorCollision[i]) {
+        pd.m_v[i] = (pd.m_v[i] - 2 * (pd.m_v[i].dot(normal)) * normal) * 0.7;
+      }
     }
   }
 
-  // checkBoundary(model);
+  checkBoundary(model);
   //  mergeParticles(model);
-  // merge2Particles(model);
-  // std::cout << pd.getNumberOfParticles() << "\n";
+  merge2Particles(model);
+  // std::cout << pd.getNumberOfParticles() << "\n";;
   // Updated upsampled particles
   // upsampledParticlesUpdate(model, h);
   // Clear Neighbors
@@ -111,6 +117,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model) {
     for (unsigned int i = 0; i < pd.size(); ++i) {
       model.getDeltaX(i).setZero();
       model.m_numConstraints[i] = 0;
+      model.m_floorCollision[i] = false;
     }
 
 #pragma omp parallel for
@@ -118,8 +125,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model) {
       if (pd.getIsActive(i)) {
 
         // boundary collision handling
-        floorFrictionConstraint(model, i);
-        // floorConstraint(model, i);
+        floorConstraint(model, i);
         // for (unsigned int boundaryIndex : model.m_boundaryNeighbors[i]) {
         //   boundaryConstraint(model, i, boundaryIndex);
         //
@@ -161,6 +167,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model) {
     for (unsigned int i = 0; i < pd.size(); ++i) {
       model.getDeltaX(i).setZero();
       model.m_numConstraints[i] = 0;
+      model.m_floorCollision[i] = false;
     }
 
 #pragma omp parallel for
@@ -168,8 +175,7 @@ void TimeStepGranularModel::constraintProjection(GranularModel &model) {
 
       if (pd.getIsActive(i)) {
         // boundary collision handling
-        // floorConstraint(model, i);
-        floorFrictionConstraint(model, i);
+        floorConstraint(model, i);
 
         // for (unsigned int boundaryIndex : model.m_boundaryNeighbors[i]) {
         //   boundaryConstraint(model, i, boundaryIndex);
@@ -220,13 +226,12 @@ void TimeStepGranularModel::boundaryConstraint(GranularModel &model,
 void TimeStepGranularModel::floorConstraint(GranularModel &model,
                                             unsigned int x1) {
   Vector3r &p1 = model.getParticles().getPosition(x1);
-  Vector3r p2 = Vector3r(p1.x(), 0.0, p1.z());
+  Vector3r normal = Vector3r(0.0, 1.0, 0.0);
+  Real distance = p1.dot(normal) - model.getParticles().getRadius(x1);
 
-  Vector3r p_12 = p1 - p2;
-  Real dist = p_12.norm();
-  Real mag = dist - (model.getParticles().getRadius(x1) + 0.025);
-  if (p1.y() <= 0.0) {
-    model.m_deltaX[x1] -= (mag / dist) * p_12;
+  if (distance <= 0.0) {
+    model.m_deltaX[x1] -= (distance)*normal;
+    model.m_floorCollision[x1] = true;
     model.m_numConstraints[x1] += 1;
   }
 }
@@ -254,16 +259,6 @@ void TimeStepGranularModel::contactConstraint(GranularModel &model,
     model.m_deltaX[x2] += massScaled2 * invMassSum * (mag / dist) * p_12;
     model.m_numConstraints[x1] += 1;
     model.m_numConstraints[x2] += 1;
-  }
-}
-
-void TimeStepGranularModel::floorFrictionConstraint(GranularModel &model,
-                                                    const unsigned int x1) {
-  ParticleData &pd = model.getParticles();
-  Vector3r p1 = pd.getPosition(x1);
-
-  if (p1.y() < 0.0) {
-    Real normalForce = pd.getMass(x1);
   }
 }
 
@@ -532,7 +527,7 @@ void TimeStepGranularModel::checkBoundary(GranularModel &model) {
       }
       // Real projSumNorm = projSum.norm();
 
-      std::cout << avgDistance << "\n";
+      // std::cout << avgDistance << "\n";
 
       // bool projCheck = (projSumNorm < 0.00001) && (projSumNorm > -0.00001);
 
@@ -642,7 +637,7 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model) {
     unsigned int n_small = model.m_smaller[i];
 
     if (model.m_mergeCount[i] < maxMergeCount) {
-      Real ratio = (model.m_mergeCount[i] + 1) / (maxMergeCount + 1);
+      Real ratio = (model.m_mergeCount[i] + 1) / (maxMergeCount + 1.0);
       Real deltaR = pow(pd.getRadius(n_small) * ratio, 3);
       Real deltaM = pd.getMass(n_small) * ratio;
       pd.m_radius[n_big] = std::cbrt(pow(pd.getRadius(n_big), 3) + deltaR);
@@ -711,4 +706,16 @@ void TimeStepGranularModel::applyForce(GranularModel &model) {
   for (int i = 0; i < pd.size(); ++i) {
     pd.m_v[i] += Vector3r(1.0, 0.0, 0.0);
   }
+}
+
+void TimeStepGranularModel::calculateAverageEnergy(GranularModel &model,
+                                                   std::ofstream &file) {
+  ParticleData &pd = model.getParticles();
+  Real energy = 0;
+  for (int i = 0; i < pd.size(); ++i) {
+    energy += static_cast<Real>(0.5) * pd.getMass(i) *
+              pd.getVelocity(i).norm() * pd.getVelocity(i).norm();
+  }
+  energy /= pd.size();
+  file << energy << "\n";
 }
