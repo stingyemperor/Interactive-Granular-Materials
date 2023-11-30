@@ -1,19 +1,21 @@
-#include "entities/Simulation.hpp"
 #include "iostream"
 #include "random"
 #include "raylib.h"
+#include "sampling/OBJLoader.hpp"
+#include "sampling/SurfaceSampler.hpp"
+#include "sampling/VolumeSampler.hpp"
 #include "scenes/GranularModel.hpp"
+#include "scenes/Scene.hpp"
 #include "scenes/TimeStepGranularModel.hpp"
+#include "simulation/Simulation.hpp"
 #include "spdlog/spdlog.h"
 #include "utils/Common.hpp"
 #include "utils/CompactNSearch.h"
-#include <array>
-#include <eigen3/Eigen/src/Core/GlobalFunctions.h>
-#include <fstream>
-#include <memory>
-#include <random>
-#include <vector>
 #include <chrono>
+#include <eigen3/Eigen/src/Core/GlobalFunctions.h>
+#include <eigen3/Eigen/src/Core/Matrix.h>
+#include <fstream>
+#include <vector>
 
 using namespace PBD;
 using namespace Utilities;
@@ -35,6 +37,7 @@ void reset();
 GranularModel model;
 TimeStepGranularModel simulation;
 NeighborhoodSearch nsearch(0.075);
+Scene scene;
 
 const Real particleRadius = static_cast<Real>(0.025);
 const Real particleRadiusUpsampled = 0.5 * particleRadius;
@@ -58,10 +61,8 @@ float deltaTime = 0.0;
 int main(void) {
   // Initialization
   //--------------------------------------------------------------------------------------
-  const int screenWidth = 1280;
-  const int screenHeight = 720;
-  InitWindow(screenWidth, screenHeight, "Granular");
   // directory is relative to build folder
+  Window window(2560, 1440);
   Texture2D sphere = LoadTexture("../assets/sphere.png");
   Shader alpha = LoadShader(NULL, "../assets/depth.fs");
   // Define the camera to look into our 3d world
@@ -78,8 +79,6 @@ int main(void) {
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::mt19937 generator(seed);
   std::uniform_real_distribution<double> uniform(0.0, 1.0);
-
-
 
   DisableCursor(); // Limit cursor to relative movement inside the window
 
@@ -105,8 +104,10 @@ int main(void) {
 
     ClearBackground(DARKGRAY);
 
-    DrawText(TextFormat("CURRENT FPS: %i", (int)(1.0f / deltaTime)),
+    DrawText(TextFormat("CURRENT FPS: %i", static_cast<int>(1.0f / deltaTime)),
              GetScreenWidth() - 220, 40, 20, GREEN);
+    DrawText(TextFormat("Particles: %i", model.m_particles.size()),
+             GetScreenWidth() - 220, 60, 20, GREEN);
     BeginMode3D(camera);
     BeginShaderMode(alpha);
 
@@ -114,7 +115,7 @@ int main(void) {
 
     // std::cout << GetFPS()  << "\n";
     // std::cout << GetFrameTime() << "\n";
-    simulation.step(model, nsearch,uniform, generator);
+    simulation.step(model, nsearch, uniform, generator);
     // if(IsKeyDown('P')){
     for (unsigned int i = 0; i < model.m_particles.size(); ++i) {
       if (model.m_particles.getIsActive(i)) {
@@ -163,19 +164,16 @@ int main(void) {
       simulation.applyForce(model);
     }
 
-    simulation.calculateAverageEnergy(model, file);
+    // simulation.calculateAverageEnergy(model, file);
 
-    DrawGrid(6, 6);
+    // DrawGrid(6, 6);
     EndShaderMode();
     EndMode3D();
 
     EndDrawing();
     //----------------------------------------------------------------------------------
   }
-  // De-Initialization
-  //--------------------------------------------------------------------------------------
-  CloseWindow(); // Close window and OpenGL context
-  //--------------------------------------------------------------------------------------
+  window.close();
   file.close();
   return 0;
 }
@@ -185,23 +183,39 @@ void createBreakingDam(NeighborhoodSearch &nsearch) {
   const Real startX = -static_cast<Real>(0.5) * containerWidth + diam;
   const Real startY = diam * 5.0;
   const Real startZ = -static_cast<Real>(0.5) * containerDepth + diam;
-  const Real yshift = sqrt(static_cast<Real>(3.0)) * particleRadius;
+
+  // std::vector<Vector3r> granularParticles;
+  // granularParticles.resize(width * height * depth);
+
+  Eigen::Matrix<Real, 3, Eigen::Dynamic> vertices;
+  Eigen::Matrix<unsigned int, 3, Eigen::Dynamic> indices;
+  Eigen::Matrix<Real, 3, Eigen::Dynamic> normals;
 
   std::vector<Vector3r> granularParticles;
-  granularParticles.resize(width * height * depth);
-
-  for (unsigned int i = 0; i < (int)width; ++i) {
-    for (unsigned int j = 0; j < (int)height; ++j) {
-      for (unsigned int k = 0; k < (int)depth; ++k) {
-        granularParticles[i * height * depth + j * depth + k] =
-            diam * Vector3r((Real)i, (Real)j, (Real)k) +
-            Vector3r(startX, startY, startZ);
-      }
-    }
-  }
 
   model.setParticleRadius(particleRadius);
   model.setParticleRadiusUpsampled(particleRadiusUpsampled);
+  Vector3r translation(0.0, 0.5, 0.0);
+  scene.SampleFromMesh("../assets/bunny.obj", granularParticles, translation,
+                       model);
+  // OBJLoader::loadObj("../assets/bunny.obj", vertices, indices, normals);;
+  // std::vector<Vector3r> granularParticles =
+  //     VolumeSampler::sampleMeshRandom(vertices, indices, 0.03);
+
+  // translate the verices
+  // for (int i = 0; i < granularParticles.size(); ++i) {
+  //   granularParticles[i] += translation;
+  // }
+
+  // for (unsigned int i = 0; i < (int)width; ++i) {
+  //   for (unsigned int j = 0; j < (int)height; ++j) {
+  //     for (unsigned int k = 0; k < (int)depth; ++k) {
+  //       granularParticles[i * height * depth + j * depth + k] =
+  //           diam * Vector3r((Real)i, (Real)j, (Real)k) +
+  //           Vector3r(startX, startY, startZ);
+  //     }
+  //   }
+  // }
 
   // boudary particle stuff
   std::vector<Vector3r> boundaryParticles;
@@ -224,39 +238,7 @@ void createBreakingDam(NeighborhoodSearch &nsearch) {
       upsampledParticles.push_back(vec);
     }
   }
-  // upsampled particles stuff
-  // int width_upsampled = width * 2.0;
-  // int height_upsampled = height * 2.0;
-  // int depth_upsampled = depth* 2.0;
-  // const Real diamUpsampled = 2.0*particleRadiusUpsampled;
-  // const Real startXupsampled = -static_cast<Real>(0.5)*containerWidth +
-  // diamUpsampled; const Real startYupsampled = diam * 5.0; const Real
-  // startZupsampled = -static_cast<Real>(0.5)*containerDepth + diamUpsampled;
 
-  // upsampledParticles.resize(width_upsampled*height_upsampled*depth_upsampled);
-
-  // for(unsigned int i = 0; i < (int)width; ++i){
-  //   for(unsigned int j = 0; j < (int)height; ++j){
-  //     for(unsigned int k = 0; k < (int)depth; ++k){
-  //       upsampledParticles[i*height*depth + j*depth + k] =
-  //       diam*Vector3r((Real)i, (Real)j, (Real)k) + Vector3r(startX, startY,
-  //       startZ);
-  //     }
-  //   }
-  // }
-
-  // for(unsigned int i = 0; i < (int)width_upsampled; ++i){
-  //   for(unsigned int j = 0; j < (int)height_upsampled; ++j){
-  //     for(unsigned int k = 0; k < (int)depth_upsampled; ++k){
-  //       upsampledParticles[i*height_upsampled*depth_upsampled +
-  //       j*depth_upsampled + k] = diamUpsampled*Vector3r((Real)i, (Real)j,
-  //                                                                                 (Real)k) + Vector3r(startXupsampled,
-  //                                                                                                     startYupsampled,
-  //                                                                                                     startZupsampled);
-  //     }
-  //   }
-  // }
-  //
   // init model stuff
   model.initModel(
       (unsigned int)granularParticles.size(), granularParticles.data(),

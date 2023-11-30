@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+#set(CMAKE_BUILD_TYPE Release)
 include(FetchContent)
 
 set(EIGEN_ROOT_DIR "/usr/local/include/eigen/3.4.0_1/include/eigen3/")
@@ -126,19 +127,19 @@ endif()
 ###openmP######################
 if(APPLE)
 set(OpenMP_C "${CMAKE_C_COMPILER}")
-set(OpenMP_C_FLAGS "-Xclang -fopenmp -I/usr/local/Cellar/libomp/14.0.0/include")
+set(OpenMP_C_FLAGS "-Xclang -fopenmp -I/usr/local/include/libomp/17.0.1/include")
 set(OpenMP_C_LIB_NAMES "libomp")
 set(OpenMP_libomp_LIBRARY "omp")
 
 set(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
-set(OpenMP_CXX_FLAGS "-Xclang -fopenmp -I/usr/local/Cellar/libomp/14.0.0/include")
+set(OpenMP_CXX_FLAGS "-Xclang -fopenmp -I/usr/local/include/libomp/17.0.1/include")
 set(OpenMP_CXX_LIB_NAMES "libomp")
 set(OpenMP_libomp_LIBRARY "omp")
 endif()
 
 if(APPLE)
-link_directories("/usr/local/Cellar/libomp/14.0.0/lib/")
-target_link_directories(${PROJECT_NAME} PRIVATE "/usr/local/Cellar/libomp/14.0.0/lib/")
+link_directories("/usr/local/include/libomp/17.0.1/lib")
+target_link_directories(${PROJECT_NAME} PRIVATE "/usr/local/include/libomp/17.0.1/lib")
 endif()
 
 

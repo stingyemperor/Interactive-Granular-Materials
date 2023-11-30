@@ -1,0 +1,277 @@
+[
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/main.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/main.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/main.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/bounding_sphere_hierarchy.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/bounding_sphere_hierarchy.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/bounding_sphere_hierarchy.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/cubic_lagrange_discrete_grid.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/cubic_lagrange_discrete_grid.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/cubic_lagrange_discrete_grid.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/discrete_grid.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/discrete_grid.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/discrete_grid.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/entity_containers.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/entity_containers.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/entity_containers.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/entity_iterators.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/entity_iterators.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/entity_iterators.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/mesh_distance.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/mesh_distance.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/mesh_distance.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/point_triangle_distance.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/point_triangle_distance.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/point_triangle_distance.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/timing.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/timing.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/timing.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/Discregrid/triangle_mesh.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/triangle_mesh.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/Discregrid/triangle_mesh.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/SurfaceSampler.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/SurfaceSampler.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/SurfaceSampler.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/sampling/VolumeSamples.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/VolumeSamples.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/sampling/VolumeSamples.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/scenes/GranularModel.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/scenes/GranularModel.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/scenes/GranularModel.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/scenes/TimeStepGranularModel.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/scenes/TimeStepGranularModel.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/scenes/TimeStepGranularModel.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/scenes/scene.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/scenes/scene.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/scenes/scene.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/Configuration.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/Configuration.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/Configuration.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/Constraints.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/Constraints.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/Constraints.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/NeighborhoodSearchSpatialHashing.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/NeighborhoodSearchSpatialHashing.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/NeighborhoodSearchSpatialHashing.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/PositionBasedDynamics.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/PositionBasedDynamics.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/PositionBasedDynamics.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/Simulation.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/Simulation.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/Simulation.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/SimulationModel.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/SimulationModel.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/SimulationModel.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/TimeIntergration.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/TimeIntergration.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/TimeIntergration.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/TimeManager.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/TimeManager.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/TimeManager.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/simulation/TimeStep.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/TimeStep.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/simulation/TimeStep.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo",
+  "command": "/usr/bin/c++ -DASSETS_PATH=\\\"./assets/\\\" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/sources -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include  -Wall -O2 -g -DNDEBUG -fopenmp=libomp -std=gnu++17 -o CMakeFiles/app.dir/sources/utils/CompactNSearch.cpp.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/sources/utils/CompactNSearch.cpp",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/sources/utils/CompactNSearch.cpp"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -isystem /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -w -std=gnu99 -o CMakeFiles/raylib.dir/rcore.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rcore.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rcore.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -isystem /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -w -std=gnu99 -o CMakeFiles/raylib.dir/rmodels.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rmodels.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rmodels.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -isystem /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -w -std=gnu99 -o CMakeFiles/raylib.dir/rshapes.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rshapes.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rshapes.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -isystem /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -w -std=gnu99 -o CMakeFiles/raylib.dir/rtext.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rtext.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rtext.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -isystem /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -w -std=gnu99 -o CMakeFiles/raylib.dir/rtextures.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rtextures.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/rtextures.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -isystem /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -w -std=gnu99 -o CMakeFiles/raylib.dir/utils.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/utils.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/utils.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src -isystem /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -w -std=gnu99 -o CMakeFiles/raylib.dir/raudio.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/raudio.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/raudio.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/context.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/context.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/context.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/init.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/init.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/init.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/input.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/input.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/input.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/monitor.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/monitor.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/monitor.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/platform.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/platform.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/platform.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/vulkan.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/vulkan.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/vulkan.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/window.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/window.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/window.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/egl_context.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/egl_context.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/egl_context.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/osmesa_context.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/osmesa_context.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/osmesa_context.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/null_init.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_init.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_init.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/null_monitor.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_monitor.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_monitor.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/null_window.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_window.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_window.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/null_joystick.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_joystick.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/null_joystick.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/posix_module.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_module.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_module.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/posix_time.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_time.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_time.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/posix_thread.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_thread.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_thread.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/x11_init.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/x11_init.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/x11_init.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/x11_monitor.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/x11_monitor.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/x11_monitor.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/x11_window.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/x11_window.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/x11_window.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/xkb_unicode.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/xkb_unicode.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/xkb_unicode.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/glx_context.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/glx_context.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/glx_context.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/linux_joystick.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/linux_joystick.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/linux_joystick.c"
+},
+{
+  "directory": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src",
+  "command": "/usr/bin/cc -D_DEFAULT_SOURCE -D_GLFW_X11 -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/include -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src -I/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-build/raylib/external/glfw/src -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -O2 -g -DNDEBUG -fPIC -Wall -std=c99 -o CMakeFiles/glfw.dir/posix_poll.c.o -c /home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_poll.c",
+  "file": "/home/empurrer/Dropbox/Interactive-Granular-Materials/out/RelWithDebInfo/_deps/raylib-src/src/external/glfw/src/posix_poll.c"
+}
+]

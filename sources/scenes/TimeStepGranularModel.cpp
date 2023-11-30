@@ -1,8 +1,8 @@
 #include "TimeStepGranularModel.hpp"
-#include "../entities/Simulation.hpp"
-#include "../entities/TimeManager.hpp"
-#include "entities/ParticleData.hpp"
-#include "entities/TimeIntegration.hpp"
+#include "../simulation/Simulation.hpp"
+#include "../simulation/TimeManager.hpp"
+#include "simulation/ParticleData.hpp"
+#include "simulation/TimeIntegration.hpp"
 #include "utils/Common.hpp"
 #include "utils/CompactNSearch.h"
 #include <cmath>
@@ -10,15 +10,16 @@
 // #include <omp.h>
 #include "random"
 #include <algorithm>
-#include <chrono>
 
 using namespace PBD;
 Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ",
                              ", ", "", "", " << ", ";");
 std::string sep = "\n-----------------------------------------\n";
 
-void TimeStepGranularModel::step(GranularModel &model,
-                                 CompactNSearch::NeighborhoodSearch &nsearch,std::uniform_real_distribution<double> &distribution, std::mt19937 &generator) {
+void TimeStepGranularModel::step(
+    GranularModel &model, CompactNSearch::NeighborhoodSearch &nsearch,
+    std::uniform_real_distribution<double> &distribution,
+    std::mt19937 &generator) {
 
   TimeManager *tm = TimeManager::getCurrent();
   const Real h = tm->getTimeStepSize();
@@ -546,7 +547,9 @@ template <typename T> void quickDelete(unsigned int index, std::vector<T> &v) {
   v.pop_back();
 }
 
-Vector3r samplePointSphere(Real radius, Vector3r &center, std::uniform_real_distribution<double> &distribution, std::mt19937 &generator){
+Vector3r samplePointSphere(Real radius, Vector3r &center,
+                           std::uniform_real_distribution<double> &distribution,
+                           std::mt19937 &generator) {
   // Real theta = 2 * M_PI * distribution(generator);
   // Real phi = std::acos(1 - 2 * distribution(generator));
   // Real x = std::sin(phi) * std::cos(theta);
@@ -556,17 +559,18 @@ Vector3r samplePointSphere(Real radius, Vector3r &center, std::uniform_real_dist
   Real x = 0.0;
   Real y = 0.0;
   Real z = radius;
-  Vector3r point = (Vector3r(x,y,z) - center).normalized();
+  Vector3r point = (Vector3r(x, y, z) - center).normalized();
   return point * radius;
 }
 
-void TimeStepGranularModel::merge2Particles(GranularModel &model,std::uniform_real_distribution<double> &distribution, std::mt19937 &generator) {
+void TimeStepGranularModel::merge2Particles(
+    GranularModel &model, std::uniform_real_distribution<double> &distribution,
+    std::mt19937 &generator) {
   ParticleData &pd = model.getParticles();
   unsigned int n = pd.size();
   unsigned short maxMergeCount = 3;
-  unsigned short maxSplit= 1;
+  unsigned short maxSplit = 1;
   unsigned short splitCount = 0;
-
 
   for (unsigned int i = 0; i < n; ++i) {
 
@@ -614,12 +618,13 @@ void TimeStepGranularModel::merge2Particles(GranularModel &model,std::uniform_re
     } else if (model.m_isBoundary[i] && pd.getIsActive(i) &&
                !model.getMergeFlag(i) && (pd.getMass(i) > model.minMass)) {
       if (model.m_inactive.size() > 0) {
-        if(splitCount < maxSplit){
+        if (splitCount < maxSplit) {
           splitCount++;
           Real newMass = pd.getMass(i) * 0.5;
-          Real newRadius = std::cbrt(pow(pd.getRadius(i) ,3) * 0.5);
+          Real newRadius = std::cbrt(pow(pd.getRadius(i), 3) * 0.5);
 
-          Vector3r newPos1 = samplePointSphere(newRadius, pd.getPosition(i),distribution, generator);
+          Vector3r newPos1 = samplePointSphere(newRadius, pd.getPosition(i),
+                                               distribution, generator);
           // antipodal point
           Vector3r newPos2 = newPos1 * (-1.0);
           newPos1 = newPos1 + pd.getPosition(i);
