@@ -11,6 +11,7 @@
 #include "spdlog/spdlog.h"
 #include "utils/Common.hpp"
 #include "utils/CompactNSearch.h"
+#include <benchmark/benchmark.h>
 #include <chrono>
 #include <eigen3/Eigen/src/Core/GlobalFunctions.h>
 #include <eigen3/Eigen/src/Core/Matrix.h>
@@ -36,7 +37,7 @@ void reset();
 
 GranularModel model;
 TimeStepGranularModel simulation;
-NeighborhoodSearch nsearch(0.075);
+NeighborhoodSearch nsearch(0.075, true);
 Scene scene;
 
 const Real particleRadius = static_cast<Real>(0.025);
@@ -55,6 +56,11 @@ const Real containerHeight = 4.0;
 double currentTime = 0.0;
 double previousTime = GetTime();
 float deltaTime = 0.0;
+bool isPause = true;
+float timer = 0;
+int direction = -1;
+Vector3r translateBoundary(0.1, 0.0, 0.0);
+Vector3r rotationAxis(0, 1, 0);
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -62,7 +68,7 @@ int main(void) {
   // Initialization
   //--------------------------------------------------------------------------------------
   // directory is relative to build folder
-  Window window(2560, 1440);
+  Window window;
   Texture2D sphere = LoadTexture("../assets/sphere.png");
   Shader alpha = LoadShader(NULL, "../assets/depth.fs");
   // Define the camera to look into our 3d world
@@ -73,7 +79,9 @@ int main(void) {
       (Vector3){0.0f, 1.0f, 0.0f}; // Camera up vector (rotation towards target)
   camera.fovy = 45.0f;             // Camera field-of-view Y
   camera.projection = CAMERA_PERSPECTIVE; // Camera projection type
-  std::ofstream file("energy.csv");
+  // std::ofstream file("energy.csv");
+  // std::ofstream file("timeMerge.csv");
+  std::ofstream file("timeBaseParallel.csv");
 
   // ---------------------Random for sphere sampling ----------------------
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -94,7 +102,9 @@ int main(void) {
     // Update
     //----------------------------------------------------------------------------------
     // UpdateCamera(&camera, CAMERA_FREE);
-
+    if (IsKeyPressed(KEY_SPACE)) {
+      isPause = !isPause;
+    }
     if (IsKeyDown('Z'))
       camera.target = (Vector3){0.0f, 0.0f, 0.0f};
     //----------------------------------------------------------------------------------
@@ -106,45 +116,34 @@ int main(void) {
 
     DrawText(TextFormat("CURRENT FPS: %i", static_cast<int>(1.0f / deltaTime)),
              GetScreenWidth() - 220, 40, 20, GREEN);
-    DrawText(TextFormat("Particles: %i", model.m_particles.size()),
+    DrawText(TextFormat("Particles: %i", model.m_numActiveParticles),
              GetScreenWidth() - 220, 60, 20, GREEN);
+    DrawText(TextFormat("Merging: %i", model.m_numMerging),
+             GetScreenWidth() - 220, 80, 20, GREEN);
+    DrawText(TextFormat("Splitting: %i", model.m_numSplitting),
+             GetScreenWidth() - 220, 100, 20, GREEN);
+
     BeginMode3D(camera);
     BeginShaderMode(alpha);
 
     DrawGrid(16, 0.5);
 
-    // std::cout << GetFPS()  << "\n";
-    // std::cout << GetFrameTime() << "\n";
-    simulation.step(model, nsearch, uniform, generator);
-    // if(IsKeyDown('P')){
-    for (unsigned int i = 0; i < model.m_particles.size(); ++i) {
-      if (model.m_particles.getIsActive(i)) {
-        Vector3r particle_pos = model.getParticles().getPosition(i);
-        Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(),
-                       (float)particle_pos.z()};
+    for (unsigned int i = 0; i < model.m_numActiveParticles; ++i) {
+      Vector3r particle_pos = model.getParticles().getPosition(i);
+      Vector3 pos = {static_cast<float>(particle_pos.x()),
+                     static_cast<float>(particle_pos.y()),
+                     static_cast<float>(particle_pos.z())};
 
-        // if(model.m_isBoundary[i] == true){
-        //   DrawBillboard(camera, sphere, pos,
-        //   model.m_particles.getRadius(i)*2.0, BLACK);
-        // }else{
-        //   DrawBillboard(camera, sphere, pos,
-        //   model.m_particles.getRadius(i)*2.0, WHITE);
-        // }
-        DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i) * 2.0,
-                      WHITE);
-      }
+      // if(model.m_isBoundary[i] == true){
+      //   DrawBillboard(camera, sphere, pos,
+      //   model.m_particles.getRadius(i)*2.0, BLACK);
+      // }else{
+      //   DrawBillboard(camera, sphere, pos,
+      //   model.m_particles.getRadius(i)*2.0, WHITE);
+      // }
+      DrawBillboard(camera, sphere, pos, model.m_particles.getRadius(i) * 2.0,
+                    WHITE);
     }
-    // }
-
-    if (IsKeyDown('B')) {
-      for (unsigned int i = 0; i < model.m_boundaryX.size(); ++i) {
-        Vector3r particle_pos = model.m_boundaryX[i];
-        Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(),
-                       (float)particle_pos.z()};
-        DrawSphereWires(pos, 0.025, 6, 6, WHITE);
-      }
-    }
-
     // for (unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i) {
     //   if (model.m_isActiveUpsampled[i]) {
     //     Vector3r particle_pos = model.getUpsampledX(i);
@@ -154,16 +153,63 @@ int main(void) {
     //                   2.0 * model.getParticleRadiusUpsampled(), WHITE);
     //   }
     // }
-    // std::cout << model.m_particles.size() << "\n";
-    // std::cout << model.m_inactiveUpsampled.size() << "\n";
+    //
+    // std::cout << GetFPS()  << "\n";
+    // std::cout << GetFrameTime() << "\n";
+    if (!isPause) {
+      auto begin = std::chrono::high_resolution_clock::now();
+      simulation.step(model, nsearch, uniform, generator);
+      auto end = std::chrono::high_resolution_clock::now();
+      auto elapsed =
+          std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+      // file << elapsed.count() << "\n";
 
-    currentTime = GetTime();
-    deltaTime = (float)(currentTime - previousTime);
-    previousTime = currentTime;
-    if (IsKeyDown('F')) {
-      simulation.applyForce(model);
+      // if(IsKeyDown('P')){
+      // }
+
+      // move boundary
+      timer += deltaTime;
+
+      for (unsigned int i = 0; i < model.m_boundaryX.size(); ++i) {
+        // model.m_boundaryX[i] 0+= direction * translateBoundary * deltaTime;
+
+        Eigen::AngleAxisd rotation(M_PI / 16 * deltaTime, rotationAxis);
+        model.m_boundaryX[i] = rotation * model.m_boundaryX[i];
+      }
+      if (timer > 8) {
+        timer = 0;
+        direction = -1 * direction;
+      }
+      if (IsKeyDown('B')) {
+        for (unsigned int i = 0; i < model.m_boundaryX.size(); ++i) {
+          Vector3r particle_pos = model.m_boundaryX[i];
+          Vector3 pos = {static_cast<float>(particle_pos.x()),
+                         static_cast<float>(particle_pos.y()),
+                         static_cast<float>(particle_pos.z())};
+          // DrawSphereWires(pos, 0.015, 6, 6, WHITE);
+          DrawBillboard(camera, sphere, pos, 0.015 * 2.0, BLACK);
+        }
+      }
+
+      // for (unsigned int i = 0; i < model.m_upsampledParticlesX.size(); ++i) {
+      //   if (model.m_isActiveUpsampled[i]) {
+      //     Vector3r particle_pos = model.getUpsampledX(i);
+      //     Vector3 pos = {(float)particle_pos.x(), (float)particle_pos.y(),
+      //                    (float)particle_pos.z()};
+      //     DrawBillboard(camera, sphere, pos,
+      //                   2.0 * model.getParticleRadiusUpsampled(), WHITE);
+      //   }
+      // }
+      // std::cout << model.m_particles.size() << "\n";
+      // std::cout << model.m_inactiveUpsampled.size() << "\n";
+
+      currentTime = GetTime();
+      deltaTime = static_cast<float>(currentTime - previousTime);
+      previousTime = currentTime;
+      if (IsKeyDown('F')) {
+        simulation.applyForce(model);
+      }
     }
-
     // simulation.calculateAverageEnergy(model, file);
 
     // DrawGrid(6, 6);
@@ -179,48 +225,17 @@ int main(void) {
 }
 
 void createBreakingDam(NeighborhoodSearch &nsearch) {
-  const Real diam = 2.0 * particleRadius;
-  const Real startX = -static_cast<Real>(0.5) * containerWidth + diam;
-  const Real startY = diam * 5.0;
-  const Real startZ = -static_cast<Real>(0.5) * containerDepth + diam;
-
-  // std::vector<Vector3r> granularParticles;
-  // granularParticles.resize(width * height * depth);
-
-  Eigen::Matrix<Real, 3, Eigen::Dynamic> vertices;
-  Eigen::Matrix<unsigned int, 3, Eigen::Dynamic> indices;
-  Eigen::Matrix<Real, 3, Eigen::Dynamic> normals;
-
   std::vector<Vector3r> granularParticles;
-
-  model.setParticleRadius(particleRadius);
-  model.setParticleRadiusUpsampled(particleRadiusUpsampled);
-  Vector3r translation(0.0, 0.5, 0.0);
-  scene.SampleFromMesh("../assets/bunny.obj", granularParticles, translation,
-                       model);
-  // OBJLoader::loadObj("../assets/bunny.obj", vertices, indices, normals);;
-  // std::vector<Vector3r> granularParticles =
-  //     VolumeSampler::sampleMeshRandom(vertices, indices, 0.03);
-
-  // translate the verices
-  // for (int i = 0; i < granularParticles.size(); ++i) {
-  //   granularParticles[i] += translation;
-  // }
-
-  // for (unsigned int i = 0; i < (int)width; ++i) {
-  //   for (unsigned int j = 0; j < (int)height; ++j) {
-  //     for (unsigned int k = 0; k < (int)depth; ++k) {
-  //       granularParticles[i * height * depth + j * depth + k] =
-  //           diam * Vector3r((Real)i, (Real)j, (Real)k) +
-  //           Vector3r(startX, startY, startZ);
-  //     }
-  //   }
-  // }
+  scene.BreakingDam(granularParticles, 15, 20, 20, 0.025);
 
   // boudary particle stuff
   std::vector<Vector3r> boundaryParticles;
-  initBoundaryData(boundaryParticles);
+  Vector3r translationBoundary(0.0, -0.2, 0.0);
+  scene.SampleFromMesh("../assets/box.obj", boundaryParticles,
+                       translationBoundary, 0.020);
 
+  initBoundaryData(boundaryParticles);
+  // updsampled particle init
   std::random_device rd;  // obtain a random number from hardware
   std::mt19937 gen(rd()); // seed the generator
   std::vector<Vector3r> upsampledParticles;
@@ -260,9 +275,9 @@ void addWall(const Vector3r &minX, const Vector3r &maxX,
   const unsigned int startIndex = (unsigned int)boundaryParticles.size();
   boundaryParticles.resize(startIndex + stepsX * stepsY * stepsZ);
 
-  for (int x = 0; x < (int)stepsX; ++x) {
-    for (int y = 0; y < (int)stepsY; ++y) {
-      for (int z = 0; z < (int)stepsZ; ++z) {
+  for (int x = 0; x < static_cast<int>(stepsX); ++x) {
+    for (int y = 0; y < static_cast<int>(stepsY); ++y) {
+      for (int z = 0; z < static_cast<int>(stepsZ); ++z) {
         const Vector3r currPos =
             minX + Vector3r(x * particleDistance, y * particleDistance,
                             z * particleDistance);
@@ -299,9 +314,7 @@ void addFloor(const int size, std::vector<Vector3r> &boundaryParticles) {
     }
   }
 }
-
 void initBoundaryData(std::vector<Vector3r> &boundaryParticles) {
-
   const Real x1 = -containerWidth / 2.0;
   const Real x2 = containerWidth / 2.0;
   const Real y1 = 0.0;
@@ -327,11 +340,11 @@ void initBoundaryData(std::vector<Vector3r> &boundaryParticles) {
 }
 
 void createPointSet(NeighborhoodSearch &nsearch) {
-  model.m_pointId1 = nsearch.add_point_set(
+  model.m_pointIdLR = nsearch.add_point_set(
       model.m_particles.getPosition(0).data(), model.m_particles.size());
-  // model.m_pointId2 = nsearch.add_point_set(model.m_boundaryX.front().data(),
-  // model.m_boundaryX.size());
-  model.m_pointId3 =
+  model.m_pointIdBoundary = nsearch.add_point_set(
+      model.m_boundaryX.front().data(), model.m_boundaryX.size());
+  model.m_pointIdUpsampled =
       nsearch.add_point_set(model.m_upsampledParticlesX.front().data(),
                             model.m_upsampledParticlesX.size());
 }

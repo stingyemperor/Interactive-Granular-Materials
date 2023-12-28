@@ -16,6 +16,16 @@ GranularModel::GranularModel() : m_particles() {
 
 GranularModel::~GranularModel(void) { cleanupModel(); }
 
+int GranularModel::numActiveParticles() {
+  int num = 0;
+  for (bool n : m_particles.m_isActive) {
+    if (n == true) {
+      num++;
+    }
+  }
+  return num;
+}
+
 void GranularModel::cleanupModel() {
   m_particles.release();
   m_boundaryX.clear();
@@ -108,7 +118,6 @@ void GranularModel::initModel(const unsigned int nGranularParticles,
                               Vector3r *boundaryParticles,
                               const unsigned int nUpsampledParticles,
                               Vector3r *upsampledParticles) {
-
   releaseParticles();
   resizeGranularParticles(nGranularParticles);
 
@@ -121,7 +130,6 @@ void GranularModel::initModel(const unsigned int nGranularParticles,
     m_floorCollision[i] = false;
   }
 
-  // TODO boundary psi stuff????
   m_boundaryX.resize(nBoundaryParticles);
   for (int i = 0; i < (int)nBoundaryParticles; ++i) {
     m_boundaryX[i] = boundaryParticles[i];
@@ -138,14 +146,11 @@ void GranularModel::initModel(const unsigned int nGranularParticles,
     m_isActiveUpsampled[i] = true;
   }
 
-  // m_neighbors.reserve(nGranularParticles);
-  // m_boundaryNeighbors.reserve(nGranularParticles);
-  // m_neighborsUpsampled.reserve(nGranularParticles);
-  // m_upsampledNeighbors.reserve(nUpsampledParticles);
-  // m_upsampledBoundaryNeighbors.reserve(nUpsampledParticles);
-
   initMasses();
   initRadius();
+  // set the number of active particles
+  // TODO: fix this to be a better implementation
+  m_numActiveParticles = nGranularParticles;
 
   reset();
 }
@@ -161,9 +166,10 @@ void GranularModel::generateNeighbors(
 
   CompactNSearch::PointSet const &ps = nsearch.point_set(point_set_id_1);
 
+  // Set up the neighbhors for the low resolution particles
   for (unsigned int i = 0; i < ps.n_points(); ++i) {
     std::vector<unsigned int> neighborParticle;
-    // std::vector<unsigned int> neighborBoundary;
+    std::vector<unsigned int> neighborBoundary;
     std::vector<unsigned int> neighborUpsampled;
 
     for (unsigned int j = 0; j < ps.n_neighbors(point_set_id_1, i); ++j) {
@@ -172,17 +178,17 @@ void GranularModel::generateNeighbors(
         neighborParticle.push_back(pid);
       }
     }
-    // for(unsigned int k = 0; k < ps.n_neighbors(point_set_id_2, i); ++k){
-    //   const unsigned int pid = ps.neighbor(point_set_id_2, i, k);
-    //   neighborBoundary.push_back(pid);
-    // }
+    for (unsigned int k = 0; k < ps.n_neighbors(point_set_id_2, i); ++k) {
+      const unsigned int pid = ps.neighbor(point_set_id_2, i, k);
+      neighborBoundary.push_back(pid);
+    }
 
     for (unsigned int k = 0; k < ps.n_neighbors(point_set_id_3, i); ++k) {
       const unsigned int pid = ps.neighbor(point_set_id_3, i, k);
       neighborUpsampled.push_back(pid);
     }
     m_neighbors.push_back(neighborParticle);
-    // m_boundaryNeighbors.push_back(neighborBoundary);
+    m_boundaryNeighbors.push_back(neighborBoundary);
     m_neighborsUpsampled.push_back(neighborUpsampled);
   }
 
@@ -198,15 +204,21 @@ void GranularModel::generateNeighbors(
       }
     }
 
-    // std::vector<unsigned int> neighborBoundaryUpsampled;
-    // for(unsigned int j = 0; j < psUpsampled.n_neighbors(point_set_id_2, i);
-    // ++j){
-    //   const unsigned int pid = psUpsampled.neighbor(point_set_id_2, i, j);
-    //   neighborBoundaryUpsampled.push_back(pid);
-    // }
+    std::vector<unsigned int> neighborBoundaryUpsampled;
+    for (unsigned int j = 0; j < psUpsampled.n_neighbors(point_set_id_2, i);
+         ++j) {
+      const unsigned int pid = psUpsampled.neighbor(point_set_id_2, i, j);
+      neighborBoundaryUpsampled.push_back(pid);
+    }
     m_upsampledNeighbors.push_back(neighborUpsampled);
-    // m_upsampledBoundaryNeighbors.push_back(neighborBoundaryUpsampled);
+    m_upsampledBoundaryNeighbors.push_back(neighborBoundaryUpsampled);
   }
+}
+
+void GranularModel::resizeNeighbors(
+    CompactNSearch::NeighborhoodSearch &nsearch) {
+  nsearch.resize_point_set(m_pointIdLR, m_particles.m_x.front().data(),
+                           m_numActiveParticles);
 }
 
 void GranularModel::clearNeighbors() {
@@ -221,4 +233,24 @@ void GranularModel::clearNeighbors() {
 
   // model.m_upsampledParticlesX[i] +=  delta_t *
   // model.m_upsampledParticlesV[i];
+}
+
+void GranularModel::updateMergingParticles(const unsigned int index) {
+  for (int i = 0; i < m_bigger.size(); ++i) {
+    if (m_bigger[i] > index) {
+      m_bigger[i] = m_bigger[i] - 1;
+    }
+
+    if (m_smaller[i] > index) {
+      m_smaller[i] = m_smaller[i] - 1;
+    }
+  }
+}
+
+int16_t GranularModel::getNumNeighbors(
+    const unsigned int index,
+    const CompactNSearch::NeighborhoodSearch &nsearch) {
+  CompactNSearch::PointSet const &ps = nsearch.point_set(m_pointIdLR);
+
+  return ps.n_neighbors(m_pointIdLR, index);
 }

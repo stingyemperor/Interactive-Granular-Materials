@@ -4,3 +4,7 @@ output
 outputHR
 Debug
 release
+.cache
+.vscode
+build_arch
+out

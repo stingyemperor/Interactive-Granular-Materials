@@ -4,7 +4,7 @@
 #include <eigen3/Eigen/Dense>
 #include <omp.h>
 #elif defined(__APPLE__)
- #include "/usr/local/include/libomp/17.0.1/include/omp.h"
+#include "/usr/local/include/libomp/17.0.1/include/omp.h"
 // #include <omp.h>
 #include <Eigen/Dense>
 #endif
@@ -35,6 +35,10 @@ using Vector2i = Eigen::Matrix<int, 2, 1, Eigen::DontAlign>;
 using Vector3i = Eigen::Matrix<unsigned int, 3, 1, Eigen::DontAlign>;
 using Matrix3rx = Eigen::Matrix<Real, 3, Eigen::Dynamic>;
 using Matrix3ix = Eigen::Matrix<unsigned int, 3, Eigen::Dynamic>;
+using Matrix2r = Eigen::Matrix<Real, 2, 2, Eigen::DontAlign>;
+using Matrix3r = Eigen::Matrix<Real, 3, 3, Eigen::DontAlign>;
+using Matrix4r = Eigen::Matrix<Real, 4, 4, Eigen::DontAlign>;
+using Quaternionr = Eigen::Quaternion<Real, Eigen::DontAlign>;
 // using Vector3x = Eigen::Matrix<Real, 3, 1>;
 
 // void printVector3(Vector3r &v){
